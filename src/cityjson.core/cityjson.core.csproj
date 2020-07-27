@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>CityJSON</PackageId>
+    <Authors>Bert Temme</Authors>
+    <Company>Bert Temme</Company>
+    <Product>CityJSON</Product>
+    <Description>Library for reading/writing CityJSON files</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RootNamespace>CityJSON</RootNamespace>
+    <AssemblyName>cityjson</AssemblyName>
+    <PackageProjectUrl>https://github.com/bertt/cityjson</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bertt/cityjson.core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>cityjson</PackageTags>
+    <PackageReleaseNotes>initial release</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>
