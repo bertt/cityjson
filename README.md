@@ -16,13 +16,15 @@ Assert.IsTrue(cityjson.Metadata.GeographicalExtent.Length== expected.Length);
 
 ## Schema generation
 
-Schema used: https://3d.bk.tudelft.nl/schemas/cityjson/1.0.1/cityjson.min.schema.json
+Schema used: https://3d.bk.tudelft.nl/schemas/cityjson/1.1.2/cityjson.min.schema.json
 
 Classes in CityJSON.Schema.cs are generated from https://app.quicktype.io?share=OD2oWcD4ShAGpJx1tjLi
 
 ## History
 
-2022-11-22: to .net 6
+2022-11-22: from CityJSON 1.0.1 to CityJSON 1.1.2
+
+2022-11-22: to .NET 6
 
 2020-07-27: original coding
 
