@@ -2,6 +2,8 @@
 
 Library for reading/writing CityJSON (https://www.cityjson.org/)
 
+NuGet package: https://www.nuget.org/packages/bertt.CityJSON/
+
 ## Sample code
 
 Parsing CityJSON file:
