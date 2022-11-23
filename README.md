@@ -6,15 +6,21 @@ NuGet package: https://www.nuget.org/packages/bertt.CityJSON/
 
 ## Sample code
 
-Parsing CityJSON file:
+Reading CityJSON file:
 
 ```
-var json = File.ReadAllText("fixtures/denhaag.json");
-var cityjson = JsonConvert.DeserializeObject<CityJsonRoot>(json);
+var cityjson = CityJsonRoot.FromJson(json);
 Assert.IsTrue(cityjson.Version == "1.0");
 var expected = new List<double>() { 78248.66, 457604.591, 2.463, 79036.024, 458276.439, 37.481 };
 Assert.IsTrue(cityjson.Metadata.GeographicalExtent.Length== expected.Length);
 ```
+
+Writing CityJSON file:
+
+```
+var cityJsonString = cityjson.ToJson();
+```
+
 
 ## Schema generation
 
