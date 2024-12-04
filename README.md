@@ -30,6 +30,8 @@ Classes in CityJSON.Schema.cs are generated from https://app.quicktype.io/?share
 
 ## History
 
+2024-12-04: release 1.1 - to .NET 8.0
+
 2022-11-22: from CityJSON 1.0.1 to CityJSON 1.1.2
 
 2022-11-22: to .NET 6
