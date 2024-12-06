@@ -6,8 +6,6 @@ namespace CityJSON
     {
         public string Type { get; set; }
         public Dictionary<string, object> Attributes { get; set; }
-
-        public List<Geometry> Geometry { get; set; }
-
+        public List<Geometry.Geometry> Geometry { get; set; }
     }
 }
