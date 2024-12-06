@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\cityjson.core\cityjson.core.csproj" />
+    <ProjectReference Include="..\src\cityjson.core\cityjson.core.csproj" />
   </ItemGroup>
 
 </Project>
