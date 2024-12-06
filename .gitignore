@@ -349,3 +349,5 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /src/cityjson.core/cityjson.core.v3.ncrunchsolution
+/src/cityjson.core/cityjson.core.v3.ncrunchproject
+/cityjson.core.tests/cityjson.core.tests.v3.ncrunchproject
