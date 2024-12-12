@@ -8,6 +8,23 @@ namespace CityJSON.Tests
 {
     public class UnitTest1
     {
+        [Test]
+        public void ReadBuildingWithInnerRingTest()
+        {
+            var json = File.ReadAllText("./fixtures/building_with_innerring.city.json");
+            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+
+            Assert.That(cityjson.Type, Is.EqualTo("CityJSON"));
+            Assert.That(cityjson.Version, Is.EqualTo("1.0"));
+
+            var wkt = cityjson.ToWkt();
+            var reader = new NetTopologySuite.IO.WKTReader();
+            var geom = reader.Read(wkt);
+
+            Assert.That(geom.GeometryType, Is.EqualTo("MultiPolygon"));
+            Assert.That(geom.NumGeometries, Is.EqualTo(102));
+
+        }
 
         [Test]
         public void ReadCityJsonSeqFileMinimal()

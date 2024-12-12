@@ -2,6 +2,7 @@
 using CityJSON.Geometry;
 using CityJSON.IO;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Noding;
 
 namespace CityJSON.Extensions
 {
@@ -10,12 +11,17 @@ namespace CityJSON.Extensions
         public static List<Polygon> ToPolys(this MultiSurfaceGeometry multiSurfaceGeometry, List<Vertex> vertices, Transform transform)
         {
             var polygons = new List<Polygon>();
-            var bnd0 = multiSurfaceGeometry.Boundaries[0];
-            var outer0 = bnd0[0];
 
-            var poly = PolygonCreator.GetPolygon(vertices, outer0, transform);
+            foreach(var bnd in multiSurfaceGeometry.Boundaries)
+            {
+                var outer = bnd[0];
 
-            polygons.Add(poly);
+                var holes = bnd.Length>1?bnd[1..]:null;
+
+                var poly = PolygonCreator.GetPolygon(vertices, outer, transform, holes);
+                polygons.Add(poly);
+            }
+
             return polygons;
         }
     }
