@@ -41,6 +41,19 @@ namespace CityJSON.Convertors
                         obj = new MultiSurfaceGeometry() { Type = GeometryType.MultiSurface, Boundaries = boundaries };
                         break;
                     }
+                case "multisolid":
+                    {
+                        var boundaries = jsonObject["boundaries"].ToObject<int[][][][][]>();
+                        obj = new MultiSolidGeometry() { Type = GeometryType.MultiSolid, Boundaries = boundaries };
+                        break;
+                    }
+                case "compositesolid":
+                    {
+                        var boundaries = jsonObject["boundaries"].ToObject<int[][][][][]>();
+                        obj = new CompositeSolidGeometry() { Type = GeometryType.CompositeSolid, Boundaries = boundaries };
+                        break;
+                    }
+
             }
 
             if (jsonObject["lod"] != null)

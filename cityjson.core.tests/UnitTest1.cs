@@ -22,7 +22,7 @@ namespace CityJSON.Tests
             Assert.That(cityJson.Version == "2.0");
 
             var transform = cityJson.Transform;
-            
+
             var secondLine = allLines[1];
             var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(secondLine);
             Assert.That(cityJsonSecond.CityObjects.Count == 2);
