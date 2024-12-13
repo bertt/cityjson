@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 public static class TileReader
 {
-    public static List<string> ReadCityJsonSeqTile(string file)
+    public static List<string> ReadCityJsonSeqTile(string file, string lod=null)
     {
         var jsonSeq = File.ReadAllText(file);
         var allLines = jsonSeq.Split('\n');
@@ -12,12 +12,12 @@ public static class TileReader
         var cityJson = JsonConvert.DeserializeObject<CityJsonDocument>(firstLine);
         var transform = cityJson.Transform;
 
-        var result = GetWkts(allLines,transform);
+        var result = GetWkts(allLines,transform, lod);
         return result;
     }
 
 
-    public static List<string> GetWkts(string[] allLines, Transform transform)
+    public static List<string> GetWkts(string[] allLines, Transform transform, string lod = null)
     {
         var wkts = new List<string>();
 
@@ -26,7 +26,7 @@ public static class TileReader
             var line = allLines[i];
             var cityObject = JsonConvert.DeserializeObject<CityJsonDocument>(line);
 
-            var wkt = cityObject.ToWkt(transform);
+            var wkt = cityObject.ToWkt(transform, lod);
             wkts.Add(wkt);
         }
         return wkts;

@@ -7,17 +7,19 @@ namespace CityJSON.Extensions
 {
     public static class CityJsonDocumentExtensions
     {
-        public static string ToWkt(this CityJsonDocument cityJson)
+        public static string ToWkt(this CityJsonDocument cityJson, string lod=null)
         {
-            return ToWkt(cityJson, cityJson.Transform);
+            return ToWkt(cityJson, cityJson.Transform,lod);
         }
 
-        public static string ToWkt(this CityJsonDocument cityJson, Transform transform)
+        public static string ToWkt(this CityJsonDocument cityJson, Transform transform, string lod=null)
         {
             var polygons = new List<Polygon>();
             foreach (var co in cityJson.CityObjects)
             {
-                foreach(var geom in co.Value.Geometry)
+                var geoms = lod!=null ? co.Value.Geometry.FindAll(g => g.Lod == lod) : co.Value.Geometry;   
+
+                foreach (var geom in geoms)
                 {
                     switch (geom)
                     {
