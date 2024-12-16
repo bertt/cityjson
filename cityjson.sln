@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cityjson.core.tests", "cityjson.core.tests\cityjson.core.tests.csproj", "{EDD6522E-B075-491F-A584-D0F00DDFE2FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests", "tests\tests.csproj", "{EDD6522E-B075-491F-A584-D0F00DDFE2FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{71E67604-6B1D-4F0B-ACA7-0D8ABA157003}"
 	ProjectSection(SolutionItems) = preProject
-		..\README.md = ..\README.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{0764D927-F593-4514-A8B2-FEF50274E6C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cityjson", "src\cityjson.core\cityjson.csproj", "{32967DF8-6C49-4415-8676-8AAAC62B17D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cityjson.core", "src\cityjson.core\cityjson.core.csproj", "{32967DF8-6C49-4415-8676-8AAAC62B17D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "samples\ConsoleApp1\ConsoleApp1.csproj", "{F6031E7E-24BA-45F4-8179-268BD1100E9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,20 +26,20 @@ Global
 		{EDD6522E-B075-491F-A584-D0F00DDFE2FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDD6522E-B075-491F-A584-D0F00DDFE2FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDD6522E-B075-491F-A584-D0F00DDFE2FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32967DF8-6C49-4415-8676-8AAAC62B17D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32967DF8-6C49-4415-8676-8AAAC62B17D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32967DF8-6C49-4415-8676-8AAAC62B17D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32967DF8-6C49-4415-8676-8AAAC62B17D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6031E7E-24BA-45F4-8179-268BD1100E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6031E7E-24BA-45F4-8179-268BD1100E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6031E7E-24BA-45F4-8179-268BD1100E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6031E7E-24BA-45F4-8179-268BD1100E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{569E6B0C-DFFC-4D1C-AD14-96BDE6116C86} = {0764D927-F593-4514-A8B2-FEF50274E6C3}
+		{F6031E7E-24BA-45F4-8179-268BD1100E9D} = {0764D927-F593-4514-A8B2-FEF50274E6C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2003E783-BBA4-44DE-ADE6-E1AAFDDE41B1}

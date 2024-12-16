@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CityJSON.Extensions;
-using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
 
 namespace CityJSON.IO

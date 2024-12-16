@@ -45,7 +45,7 @@ Assert.That(geom.GeometryType == "MultiPolygon");
 
 ## Kown limitations
 
-- Geometry type support: Solid, MultiSurface, CompositeSurface
+- Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid 
 
 - No support for metadata, semantics, extensions, textures, materials
 
