@@ -1,18 +1,19 @@
 ﻿using CityJSON.Geometry;
+using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CityJSON.Extensions
 {
     public static class CityJsonDocumentExtensions
     {
-        public static string ToWkt(this CityJsonDocument cityJson, string lod=null)
+        public static Feature ToFeature(this CityJsonDocument cityJson, string lod=null)
         {
-            return ToWkt(cityJson, cityJson.Transform,lod);
+            return ToFeature(cityJson, cityJson.Transform,lod);
         }
 
-        public static string ToWkt(this CityJsonDocument cityJson, Transform transform, string lod=null)
+        public static Feature ToFeature(this CityJsonDocument cityJson, Transform transform, string lod=null)
         {
             var polygons = new List<Polygon>();
             foreach (var co in cityJson.CityObjects)
@@ -56,10 +57,21 @@ namespace CityJSON.Extensions
             var geometryFactory = new GeometryFactory();
 
             var multiPolygon = geometryFactory.CreateMultiPolygon(polygons.ToArray());
-            var wktWriter = new WKTWriter();
-            wktWriter.OutputOrdinates = Ordinates.XYZ;
-            var wkt = wktWriter.Write(multiPolygon);
-            return wkt;
+
+            var feature = new Feature();
+
+            // select the attributes of the first CityObject
+            var attributes = cityJson.CityObjects.First().Value.Attributes;
+
+            if (attributes != null)
+            {
+                // create new attributes
+                var atts = new AttributesTable(attributes);
+                feature.Attributes = atts;  
+            }
+
+            feature.Geometry = multiPolygon;
+            return feature;
         }
     }
 }

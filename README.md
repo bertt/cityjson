@@ -35,11 +35,10 @@ var transform = cityJson.Transform;
 var secondLine = allLines[1];
 var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(secondLine);
 Assert.That(cityJsonSecond.CityObjects.Count == 2);
-var wkt = cityJsonSecond.ToWkt(transform);
+var feature = cityJsonSecond.ToFeature(transform);
 
 // read with NetTopologySuite
-var reader = new NetTopologySuite.IO.WKTReader();
-var geom = reader.Read(wkt);
+var geom = feature.Geometry;
 Assert.That(geom.GeometryType == "MultiPolygon");
 ```
 

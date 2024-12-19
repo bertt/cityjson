@@ -17,9 +17,8 @@ namespace CityJSON.Tests
             Assert.That(cityjson.Type, Is.EqualTo("CityJSON"));
             Assert.That(cityjson.Version, Is.EqualTo("1.0"));
 
-            var wkt = cityjson.ToWkt();
-            var reader = new NetTopologySuite.IO.WKTReader();
-            var geom = reader.Read(wkt);
+            var feature = cityjson.ToFeature();
+            var geom = feature.Geometry;
 
             Assert.That(geom.GeometryType, Is.EqualTo("MultiPolygon"));
             Assert.That(geom.NumGeometries, Is.EqualTo(102));
@@ -43,11 +42,8 @@ namespace CityJSON.Tests
             var secondLine = allLines[1];
             var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(secondLine);
             Assert.That(cityJsonSecond.CityObjects.Count == 2);
-            var wkt = cityJsonSecond.ToWkt(transform);
-
-            // read with NetTopologySuite
-            var reader = new NetTopologySuite.IO.WKTReader();
-            var geom = reader.Read(wkt);
+            var feature = cityJsonSecond.ToFeature(transform);
+            var geom = feature.Geometry;
             Assert.That(geom.GeometryType == "MultiPolygon");
         }
 
@@ -78,11 +74,8 @@ namespace CityJSON.Tests
             var secondLine = allLines[1];
             var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(secondLine);
             Assert.That(cityJsonSecond.CityObjects.Count == 2);
-            var wkt = cityJsonSecond.ToWkt(transform);
-
-            // read with NetTopologySuite
-            var reader = new NetTopologySuite.IO.WKTReader();
-            var geom = reader.Read(wkt);
+            var feature = cityJsonSecond.ToFeature(transform);
+            var geom = feature.Geometry;
             Assert.That(geom.GeometryType == "MultiPolygon");
         }
 

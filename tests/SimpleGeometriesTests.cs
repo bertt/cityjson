@@ -20,9 +20,8 @@ public class SimpleGeometriesTests
         Assert.That(cityjson.Type, Is.EqualTo(expectedType));
         Assert.That(cityjson.Version, Is.EqualTo(expectedVersion));
 
-        var wkt = cityjson.ToWkt();
-        var reader = new NetTopologySuite.IO.WKTReader();
-        var geom = reader.Read(wkt);
+        var feature = cityjson.ToFeature();
+        var geom = feature.Geometry;
 
         Assert.That(geom.GeometryType, Is.EqualTo(expectedGeometryType));
         Assert.That(geom.NumGeometries, Is.EqualTo(expectedNumGeometries));

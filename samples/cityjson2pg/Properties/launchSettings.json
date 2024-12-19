@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleApp1": {
+      "commandName": "Project",
+      "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5432\" -t bertt.roofer -i D:\\aaa\\bastia_las_files\\output\\tiles"
+    }
+  }
+}

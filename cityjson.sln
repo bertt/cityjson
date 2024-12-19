@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{0764
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cityjson", "src\cityjson.csproj", "{32967DF8-6C49-4415-8676-8AAAC62B17D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "samples\ConsoleApp1\ConsoleApp1.csproj", "{F6031E7E-24BA-45F4-8179-268BD1100E9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cityjson2pg", "samples\cityjson2pg\cityjson2pg.csproj", "{F6031E7E-24BA-45F4-8179-268BD1100E9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
