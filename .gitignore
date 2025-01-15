@@ -358,3 +358,4 @@ ncrunchproject
 /samples/ConsoleApp1/ConsoleApp1.v3.ncrunchproject
 /samples/cityjson2pg/cityjson2pg.v3.ncrunchproject
 /tests/tests.v3.ncrunchproject
+/samples/cityjson2pg/Properties/launchSettings.json
