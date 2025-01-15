@@ -1,5 +1,4 @@
-﻿using CityJSON.Geometry;
-using NetTopologySuite.Features;
+﻿using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,45 +14,10 @@ namespace CityJSON.Extensions
 
         public static Feature ToFeature(this CityJsonDocument cityJson, Transform transform, string lod=null)
         {
-            var polygons = new List<Polygon>();
-            foreach (var co in cityJson.CityObjects)
-            {
-                var geoms = lod!=null ? co.Value.Geometry.FindAll(g => g.Lod == lod) : co.Value.Geometry;   
+            var vertices = cityJson.Vertices;
+            var cityObjects = cityJson.CityObjects;
 
-                foreach (var geom in geoms)
-                {
-                    switch (geom)
-                    {
-                        case MultiSurfaceGeometry:
-                            {
-                                var ms = (MultiSurfaceGeometry)geom;
-                                polygons.AddRange(ms.ToPolys(cityJson.Vertices, transform));
-                                break;
-                            }
-
-                        case SolidGeometry:
-                            {
-                                var ms = (SolidGeometry)geom;
-                                polygons.AddRange(ms.ToPolygons(cityJson.Vertices, transform));
-                                break;
-                            }
-
-                        case MultiSolidGeometry:
-                            {
-                                var ms = (MultiSolidGeometry)geom;
-                                polygons.AddRange(ms.ToPolys(cityJson.Vertices, transform));
-                                break;
-                            }
-
-                        case CompositeSolidGeometry:
-                            {
-                                var ms = (CompositeSolidGeometry)geom;
-                                polygons.AddRange(ms.ToPolys(cityJson.Vertices, transform));
-                                break;
-                            }
-                    }
-                }
-            }
+            var polygons = GetPolygons(cityObjects, vertices, transform, lod);
             var geometryFactory = new GeometryFactory();
 
             var multiPolygon = geometryFactory.CreateMultiPolygon(polygons.ToArray());
@@ -67,11 +31,26 @@ namespace CityJSON.Extensions
             {
                 // create new attributes
                 var atts = new AttributesTable(attributes);
-                feature.Attributes = atts;  
+                feature.Attributes = atts;
             }
 
             feature.Geometry = multiPolygon;
             return feature;
         }
+
+        private static List<Polygon> GetPolygons(Dictionary<string, CityObject> cityObjects, List<Vertex> vertices, Transform transform, string lod = null)
+        {
+            var polygons = new List<Polygon>();
+            foreach (var co in cityObjects)
+            {
+                var cityObject = co.Value;
+                var polys = cityObject.Geometry.ToPolygons (vertices, transform, lod);
+                polygons.AddRange(polys);
+            }
+
+            return polygons;
+        }
+
+
     }
 }

@@ -14,35 +14,22 @@ Reading CityJSON file:
 
 ```
 var json = File.ReadAllText("fixtures/minimal.city.json");
-var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-Assert.IsTrue(cityjson.Version == "1.0");
+var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
 ```
 
 Sample reading CityJSON 2.0 Seq file and converting to NetTopologySuite:
 
 ```
-var jsonSeq = File.ReadAllText("fixtures/tile_00000.city.jsonl");
-
-var allLines = jsonSeq.Split('\n');
-
-var firstLine = allLines[0];
-var cityJson = JsonConvert.DeserializeObject<CityJsonDocument>(firstLine);
-Assert.That(cityJson.Type == "CityJSON");
-Assert.That(cityJson.Version == "2.0");
-
-var transform = cityJson.Transform;
-            
-var secondLine = allLines[1];
-var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(secondLine);
-Assert.That(cityJsonSecond.CityObjects.Count == 2);
-var feature = cityJsonSecond.ToFeature(transform);
-
-// read with NetTopologySuite
-var geom = feature.Geometry;
-Assert.That(geom.GeometryType == "MultiPolygon");
+var cityJsondocuments = CityJsonSeqReader.ReadCityJsonSeq("./fixtures/cityjsonseq/paris_tower.city.jsonl");
 ```
 
-## Kown limitations
+Converting CityJSON object to NetTopologySuite:
+
+```
+var features = cityObject.ToFeatures(vertices, transform);
+```
+
+## Known limitations
 
 - Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid 
 
@@ -51,6 +38,8 @@ Assert.That(geom.GeometryType == "MultiPolygon");
 - No support for writing CityJSON files
 
 ## History
+
+2024-01-15: release 2.1 - Reading CityJSON 2.0 Seq files
 
 2024-12-06: release 2.0 - Refactoring - Reading geometries
 

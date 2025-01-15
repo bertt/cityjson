@@ -2,7 +2,6 @@
 using CityJSON.Geometry;
 using CityJSON.IO;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.Noding;
 
 namespace CityJSON.Extensions
 {

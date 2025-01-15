@@ -11,7 +11,6 @@ public static class CompositeSolidGeometryExtensions
 
         foreach (var solid in compositeSolidGeometry.Boundaries)
         {
-            // create a solid geometry
             var solidGeometry = new SolidGeometry();
             solidGeometry.Boundaries = solid;
             var solidPolygons = solidGeometry.ToPolygons(vertices, transform);
