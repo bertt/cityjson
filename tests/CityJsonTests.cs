@@ -4,7 +4,6 @@ using CityJSON.Extensions;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace CityJSON.Tests
@@ -24,15 +23,12 @@ namespace CityJSON.Tests
             Assert.That(texture != null);
             Assert.That(texture.Count == 1);
             Assert.That(texture.First().Key == "rgbTexture");
-            var firstTexture = (JObject)texture.First().Value;
-            var values = firstTexture["values"];
-            Assert.That(values.Count() == 20);
-            var ints = values.ToObject<int?[][][]>();
-            Assert.That(ints[0][0][0] == 50);
-            Assert.That(ints[0][0][1] == 15254);
-            Assert.That(ints[0][0][2] == 15255);
-            Assert.That(ints[0][0][3] == 15256);
-            Assert.That(ints[0][0][4] == 15257);
+            var firstTexture = texture.First().Value;
+            Assert.That(firstTexture[0][0][0] == 50);
+            Assert.That(firstTexture[0][0][1] == 15254);
+            Assert.That(firstTexture[0][0][2] == 15255);
+            Assert.That(firstTexture[0][0][3] == 15256);
+            Assert.That(firstTexture[0][0][4] == 15257);
         }
 
         [Test]

@@ -11,6 +11,6 @@ namespace CityJSON.Geometry
         public string Lod { get; set; }
 
         [JsonProperty("texture")]
-        public Dictionary<string, object> Texture { get; set; }
+        public Dictionary<string, int?[][][]> Texture { get; set; }
     }
 }

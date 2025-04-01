@@ -64,7 +64,9 @@ namespace CityJSON.Convertors
 
             if(jsonObject["texture"] != null)
             {
-                obj.Texture = jsonObject["texture"].ToObject<Dictionary<string, object>>();
+                var textureObject = jsonObject["texture"].ToObject<Dictionary<string, Object>>();
+                var texture = ReadTexture(textureObject);   
+                obj.Texture = texture;
             }
 
             return obj;
@@ -75,6 +77,17 @@ namespace CityJSON.Convertors
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
+        }
+
+        private Dictionary<string, int?[][][]> ReadTexture(Dictionary<string, object> texture)
+        {
+            var result = new Dictionary<string, int?[][][]>();
+            foreach (var textureObject in texture)
+            {
+                var values = ((JObject)textureObject.Value)["values"].ToObject<int?[][][]>();
+                result.Add(textureObject.Key, values);
+            }
+            return result;
         }
     }
 }

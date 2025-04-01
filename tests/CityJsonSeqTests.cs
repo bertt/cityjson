@@ -46,8 +46,5 @@ public class CityJsonSeqTests
         var wktWriter = new WKTWriter();
         wktWriter.OutputOrdinates = Ordinates.XYZ;
         var wkt = wktWriter.Write(feature.Geometry);
-
-
     }
-
 }
