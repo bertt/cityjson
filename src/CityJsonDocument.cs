@@ -13,5 +13,7 @@ namespace CityJSON
         public Dictionary<string, CityObject> CityObjects { get; set; }
 
         public List<Vertex> Vertices { get; set; }
+
+        public Appearance Appearance { get; set; }
     }
 }

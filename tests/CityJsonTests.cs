@@ -11,6 +11,28 @@ namespace CityJSON.Tests
     public class UnitTest1
     {
         [Test]
+        public void ReadAppearanceTest()
+        {
+            var json = File.ReadAllText("./fixtures/minimal_textures.city.json");
+            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            Assert.That(cityjson.Appearance.Textures.Count == 2);
+            var firstTexture = cityjson.Appearance.Textures.First();
+            Assert.That(firstTexture.Image == "http://www.someurl.org/filename.jpg");
+            Assert.That(firstTexture.ImageType == TextureImageType.PNG);
+            var secondTexture = cityjson.Appearance.Textures.Last();
+            Assert.That(secondTexture.Image == "appearances/myroof.jpg");
+            Assert.That(secondTexture.ImageType == TextureImageType.JPG);
+            Assert.That(secondTexture.TextureType == TextureType.unknown);
+            Assert.That(secondTexture.WrapMode == TextureWrapMode.wrap);
+            Assert.That(secondTexture.BorderColor.Count() == 4);
+            var verticesTexture = cityjson.Appearance.VerticesTexture;
+            Assert.That(verticesTexture.Count() == 4);
+            Assert.That(verticesTexture[0].Count() == 2);
+            Assert.That(verticesTexture[0][0] == 0.0f);
+            Assert.That(verticesTexture[0][1] == 0.5f);
+        }
+
+        [Test]
         public void ReadBuildingWithInnerRingTest()
         {
             var json = File.ReadAllText("./fixtures/building_with_innerring.city.json");

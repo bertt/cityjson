@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackageId>bertt.CityJSON</PackageId>
     <Authors>Bert Temme</Authors>
     <Company>Bert Temme</Company>
@@ -16,10 +16,11 @@
     <PackageTags>CityJSON</PackageTags>
     <PackageReleaseNotes>initial release</PackageReleaseNotes>
 	<PackageVersion>2.1</PackageVersion>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+    <PackageReference Include="NetTopologySuite" Version="2.6.0" />
     <PackageReference Include="NetTopologySuite.Features" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

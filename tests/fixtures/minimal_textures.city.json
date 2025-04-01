@@ -1,0 +1,34 @@
+{
+  "type": "CityJSON",
+  "version": "2.0",
+  "extensions": {},
+  "transform": {
+    "scale": [ 1.0, 1.0, 1.0 ],
+    "translate": [ 0.0, 0.0, 0.0 ]
+  },
+  "metadata": {},
+  "CityObjects": {},
+  "vertices": [],
+  "appearance": {
+    "textures": [
+      {
+        "type": "PNG",
+        "image": "http://www.someurl.org/filename.jpg"
+      },
+      {
+        "type": "JPG",
+        "image": "appearances/myroof.jpg",
+        "wrapMode": "wrap",
+        "textureType": "unknown",
+        "borderColor": [ 0.0, 0.1, 0.2, 1.0 ]
+      }
+    ],
+    "vertices-texture": [
+      [ 0.0, 0.5 ],
+      [ 1.0, 0.0 ],
+      [ 1.0, 1.0 ],
+      [ 0.0, 1.0 ]
+    ]
+  },
+  "geometry-templates": {}
+}

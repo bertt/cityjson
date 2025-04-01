@@ -1,6 +1,6 @@
 # CityJSON
 
-.NET 8.0 Library for reading CityJSON files (https://www.cityjson.org/)
+.NET 6.0 Library for reading CityJSON files (https://www.cityjson.org/)
 
 NuGet package: https://www.nuget.org/packages/bertt.CityJSON/
 
@@ -33,7 +33,9 @@ var features = cityObject.ToFeatures(vertices, transform);
 
 - Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid 
 
-- No support for metadata, semantics, extensions, textures, materials
+- Appearance support: Textures, Vertices-Texture 
+
+- No support for metadata, semantics, extensions, materials
 
 - No support for writing CityJSON files
 
