@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build cityjson.slnx --no-restore
+      run: dotnet build ./src/cityjson.slnx --no-restore
     - name: Test
-      run: dotnet test cityjson.slnx --no-build --verbosity normal
+      run: dotnet test ./src/cityjson.slnx --no-build --verbosity normal
