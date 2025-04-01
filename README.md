@@ -39,7 +39,7 @@ var features = cityObject.ToFeatures(vertices, transform);
 
 ## History
 
-2024-01-15: release 2.1 - Reading CityJSON 2.0 Seq files
+2025-01-15: release 2.1 - Reading CityJSON 2.0 Seq files
 
 2024-12-06: release 2.0 - Refactoring - Reading geometries
 
