@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CityJSON.Geometry;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -59,6 +60,11 @@ namespace CityJSON.Convertors
             if (jsonObject["lod"] != null)
             {
                 obj.Lod = jsonObject["lod"].ToString();
+            }
+
+            if(jsonObject["texture"] != null)
+            {
+                obj.Texture = jsonObject["texture"].ToObject<Dictionary<string, object>>();
             }
 
             return obj;

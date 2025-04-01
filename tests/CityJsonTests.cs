@@ -4,12 +4,37 @@ using CityJSON.Extensions;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace CityJSON.Tests
 {
     public class UnitTest1
     {
+        [Test]
+        public void ReadDelftshavenTest()
+        {
+            var json = File.ReadAllText("./fixtures/3-20-DELFSHAVEN.city.json");
+            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var firstCityObject = cityjson.CityObjects.First().Value;
+            Assert.That(firstCityObject.Type == CityObjectType.Building);
+            var firstGeometry = firstCityObject.Geometry.First();
+            Assert.That(firstGeometry.Type == Geometry.GeometryType.MultiSurface);
+            var texture = firstGeometry.Texture;
+            Assert.That(texture != null);
+            Assert.That(texture.Count == 1);
+            Assert.That(texture.First().Key == "rgbTexture");
+            var firstTexture = (JObject)texture.First().Value;
+            var values = firstTexture["values"];
+            Assert.That(values.Count() == 20);
+            var ints = values.ToObject<int?[][][]>();
+            Assert.That(ints[0][0][0] == 50);
+            Assert.That(ints[0][0][1] == 15254);
+            Assert.That(ints[0][0][2] == 15255);
+            Assert.That(ints[0][0][3] == 15256);
+            Assert.That(ints[0][0][4] == 15257);
+        }
+
         [Test]
         public void ReadAppearanceTest()
         {
