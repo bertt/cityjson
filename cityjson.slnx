@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/doc/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/cityjson2pg/cj2pg.csproj" />
+    <Project Path="tools/cj2gltf.tests/cj2gltf.tests.csproj" />
+    <Project Path="tools/cj2gltf/cj2gltf.csproj" />
+  </Folder>
+  <Project Path="src/cityjson.csproj" />
+  <Project Path="tests/tests.csproj" />
+</Solution>
