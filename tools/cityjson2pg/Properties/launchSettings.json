@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Paris": {
+      "commandName": "Project",
+      "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5439\" -t public.paris -i D:\\aaa\\las_eiffel\\output\\tiles"
+    },
+    "Sisteron": {
+      "commandName": "Project",
+      "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5439\" -t public.sisteron -i D:\\gisdata\\3dbag\\sisteron\\tiles\\"
+    },
+    "Debug": {
+      "commandName": "Project",
+      "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5439\" -t public.roofer -i D:\\aaa\\debug\\"
+    }
+
+  }
+}

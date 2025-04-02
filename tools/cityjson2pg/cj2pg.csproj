@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-	<ToolCommandName>cityjson2pg</ToolCommandName>
+    <TargetFramework>net9.0</TargetFramework>
+	<ToolCommandName>cj2pg</ToolCommandName>
 	<PackageOutputPath>./nupkg</PackageOutputPath>
 	  <PackAsTool>true</PackAsTool>
 	<Version>0.1.5</Version>
