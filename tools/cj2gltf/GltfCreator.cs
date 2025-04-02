@@ -1,7 +1,10 @@
-﻿using SharpGLTF.Geometry;
+﻿using CityJSON;
+using SharpGLTF.Geometry;
 using SharpGLTF.Materials;
 using System.Numerics;
+using Triangulate;
 using Wkx;
+using CityJSON.Extensions;
 
 namespace cj2gltf;
 
@@ -9,7 +12,19 @@ using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPosition;
 
 public static class GltfCreator
 {
-    public static void CreateGltf(string outputfile, List<Polygon> geometries)
+    public static byte[] ToGltf(CityJsonDocument cityjsonDocument)
+    {
+        var transform = cityjsonDocument!.Transform;
+        var feature = cityjsonDocument.ToFeature(transform);
+        var wkt = feature.Geometry.AsText();
+        var g = (MultiPolygon)Geometry.Deserialize<WktSerializer>(wkt);
+        var wkb = g.AsBinary();
+        var wkbTriangulated = Triangulator.Triangulate(wkb);
+        var triangulatedGeometry = (MultiPolygon)Geometry.Deserialize<WkbSerializer>(wkbTriangulated);
+        var bytes = CreateGltf(triangulatedGeometry.Geometries);
+        return bytes;
+    }
+    public static byte[] CreateGltf(List<Polygon> geometries)
     {
         // convert to glTF to be able to inspect the result...
         var material1 = new MaterialBuilder()
@@ -31,6 +46,7 @@ public static class GltfCreator
         var scene = new SharpGLTF.Scenes.SceneBuilder();
         scene.AddRigidMesh(mesh, Matrix4x4.Identity);
         var model = scene.ToGltf2();
-        model.SaveGLTF(outputfile);
+        var bytes = model.WriteGLB();
+        return bytes.Array;
     }
 }

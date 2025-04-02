@@ -41,6 +41,8 @@ var features = cityObject.ToFeatures(vertices, transform);
 
 - Appearance support: Textures, Vertices-Texture 
 
+- No support for interior rings in surfaces
+
 - No support for metadata, semantics, extensions, materials
 
 - No support for writing CityJSON files
