@@ -1,6 +1,4 @@
 ﻿using CityJSON.Extensions;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.IO;

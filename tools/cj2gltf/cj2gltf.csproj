@@ -8,12 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bertt.triangulator" Version="1.6.0" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.3" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\cityjson.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="samples\cube.city.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

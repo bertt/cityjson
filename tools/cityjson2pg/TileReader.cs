@@ -27,17 +27,8 @@ public static class TileReader
             var line = allLines[i];
             var cityObject = JsonConvert.DeserializeObject<CityJsonDocument>(line);
 
-            // Check if the point cloud is unusable
-            // This can happen when the point cloud is not sufficient available
-            var pointCloudUnusable = (bool)cityObject!.CityObjects.First().Value.Attributes["rf_pointcloud_unusable"];
-            var volume = cityObject!.CityObjects.First().Value.Attributes["rf_volume_lod22"];
-            var volumeNotOk = volume == null || (double)volume < 0.1;
-
-            if ((!pointCloudUnusable) && !volumeNotOk)
-            {
-                var feature = cityObject.ToFeature(transform, lod);
-                features.Add(feature);
-            }
+            var feature = cityObject.ToFeature(transform, lod);
+            features.Add(feature);
         }
         return features;
     }
