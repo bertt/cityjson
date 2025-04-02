@@ -41,7 +41,7 @@ public class CityJsonSeqTests
         var feature = cityJsonSecond.ToFeature(firstCityJsonDocument.Transform);
         var geom = feature.Geometry;
         Assert.That(geom.GeometryType == "MultiPolygon");
-        Assert.That(geom.NumGeometries == 461);
+        Assert.That(geom.NumGeometries == 458);
 
         var wktWriter = new WKTWriter();
         wktWriter.OutputOrdinates = Ordinates.XYZ;

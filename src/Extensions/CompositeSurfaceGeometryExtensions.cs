@@ -12,9 +12,7 @@ public static class CompositeSurfaceGeometryExtensions
 
         foreach (var poly in compositeSurfaceGeometry.Boundaries)
         {
-            var outer = poly[0];
-            var holes = poly.Length > 1 ? poly[1..] : null;
-            var polygon = PolygonCreator.GetPolygon(vertices, outer, transform, holes);
+            var polygon = PolygonCreator.GetPolygon(vertices, poly, transform);
             polygons.Add(polygon);
         }
 

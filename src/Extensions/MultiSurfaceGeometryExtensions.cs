@@ -13,11 +13,7 @@ namespace CityJSON.Extensions
 
             foreach(var bnd in multiSurfaceGeometry.Boundaries)
             {
-                var outer = bnd[0];
-
-                var holes = bnd.Length>1?bnd[1..]:null;
-
-                var poly = PolygonCreator.GetPolygon(vertices, outer, transform, holes);
+                var poly = PolygonCreator.GetPolygon(vertices, bnd, transform);
                 polygons.Add(poly);
             }
 

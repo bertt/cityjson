@@ -2,7 +2,7 @@
   "profiles": {
     "cj2gltf": {
       "commandName": "Project",
-      "commandLineArgs": "./samples/cube.city.json cube.city.gltf"
+      "commandLineArgs": "./samples/torus.city.json torus.city.gltf"
     }
   }
 }

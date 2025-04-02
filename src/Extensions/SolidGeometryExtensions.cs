@@ -14,11 +14,8 @@ namespace CityJSON.Extensions
 
             foreach (var outer in bnd0)
             {
-                foreach (var outer1 in outer)
-                {
-                    var poly = PolygonCreator.GetPolygon(vertices, outer1, transform);
-                    polygons.Add(poly);
-                }
+                var poly = PolygonCreator.GetPolygon(vertices, outer, transform);
+                polygons.Add(poly);
             }
             return polygons;
         }

@@ -9,7 +9,7 @@ public class SimpleGeometriesTests
     [TestCase("fixtures/simplegeom/v2.0/twocube.city.json", "CityJSON", "2.0", "MultiPolygon", 12)]
     [TestCase("fixtures/simplegeom/v2.0/csol.city.json", "CityJSON", "2.0", "MultiPolygon", 12)]
     [TestCase("fixtures/simplegeom/v2.0/msol.city.json", "CityJSON", "2.0", "MultiPolygon", 12)]
-    [TestCase("fixtures/simplegeom/v2.0/torus.city.json", "CityJSON", "2.0", "MultiPolygon", 11)]
+    [TestCase("fixtures/simplegeom/v2.0/torus.city.json", "CityJSON", "2.0", "MultiPolygon", 9)]
     [TestCase("fixtures/simplegeom/v2.0/tetra.city.json", "CityJSON", "2.0", "MultiPolygon", 4)]
     [TestCase("fixtures/simplegeom/v2.0/cube.city.json", "CityJSON", "2.0", "MultiPolygon", 6)]
     public void ValidateCityJsonFile(string filePath, string expectedType, string expectedVersion, string expectedGeometryType, int expectedNumGeometries)

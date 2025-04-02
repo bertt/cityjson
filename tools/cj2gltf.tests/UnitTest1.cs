@@ -22,6 +22,6 @@ public class Tests
         var stream = new MemoryStream(result);
         var model = ModelRoot.ReadGLB(stream);
         Assert.That(model != null); 
-        // model.SaveGLB(@"cube1.glb");
+        // model.SaveGLB(@"torus.glb");
     }
 }

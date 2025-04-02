@@ -37,15 +37,15 @@ var features = cityObject.ToFeatures(vertices, transform);
 
 ## Known limitations
 
-- Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid 
+- Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid;
 
-- Appearance support: Textures, Vertices-Texture 
+- Support for interrior rings;
 
-- No support for interior rings in surfaces
+- Appearance support: Textures, Vertices-Texture; 
 
-- No support for metadata, semantics, extensions, materials
+- No support for metadata, semantics, extensions, materials;
 
-- No support for writing CityJSON files
+- No support for writing CityJSON files;
 
 ## History
 

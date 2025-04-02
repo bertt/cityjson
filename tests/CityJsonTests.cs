@@ -8,8 +8,56 @@ using NUnit.Framework;
 
 namespace CityJSON.Tests
 {
+
+
     public class UnitTest1
     {
+        [Test]
+        public void MultiPolyTest()
+        {
+            var geometryFactory = new GeometryFactory();
+
+            // Buitenste polygoon (exterior)
+            var exterior = new LinearRing(new[]
+            {
+            new Coordinate(0, 0),
+            new Coordinate(10, 0),
+            new Coordinate(10, 10),
+            new Coordinate(0, 10),
+            new Coordinate(0, 0)  // Sluit de ring
+        });
+
+            // Binnenste gat (interior ring)
+            var hole = new LinearRing(new[]
+            {
+            new Coordinate(3, 3),
+            new Coordinate(7, 3),
+            new Coordinate(7, 7),
+            new Coordinate(3, 7),
+            new Coordinate(3, 3)  // Sluit de ring
+        });
+
+            // Maak de polygon met het gat
+            var polygonWithHole = new Polygon(exterior, new[] { hole }, geometryFactory);
+
+            // Maak een Multipolygon met één polygon met een gat
+            var multiPolygon1 = new MultiPolygon(new[] { polygonWithHole }, geometryFactory);
+
+        }
+
+        [Test]
+        public void TestTorus() {
+            var json = File.ReadAllText("./fixtures/simplegeom/v2.0/cube.city.json");
+            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var feature = cityjson.ToFeature();
+            var multiPolygon = (MultiPolygon)feature.Geometry;
+            var polys = multiPolygon.Geometries;
+            // multiPolygon.Geometries.
+            
+        }
+
+
+
         [Test]
         public void ReadDelftshavenTest()
         {
