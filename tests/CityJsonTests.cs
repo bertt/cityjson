@@ -50,7 +50,9 @@ namespace CityJSON.Tests
         {
             var json = File.ReadAllText("./fixtures/simplegeom/v2.0/cube.city.json");
             var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-            var feature = cityjson.ToFeature();
+            var features = cityjson.ToFeatures();
+            Assert.That(features.Count == 1);
+            var feature = features.First();
             var multiPolygon = (MultiPolygon)feature.Geometry;
             var polys = multiPolygon.Geometries;
             // multiPolygon.Geometries.
@@ -111,7 +113,9 @@ namespace CityJSON.Tests
             Assert.That(cityjson.Type, Is.EqualTo("CityJSON"));
             Assert.That(cityjson.Version, Is.EqualTo("1.0"));
 
-            var feature = cityjson.ToFeature();
+            var features = cityjson.ToFeatures();
+            Assert.That(features.Count, Is.EqualTo(1));
+            var feature = features.First();
             var geom = feature.Geometry;
 
             Assert.That(geom.GeometryType, Is.EqualTo("MultiPolygon"));

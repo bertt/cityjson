@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 
 namespace CityJSON.Tests;
 public class SimpleGeometriesTests
@@ -20,7 +21,9 @@ public class SimpleGeometriesTests
         Assert.That(cityjson.Type, Is.EqualTo(expectedType));
         Assert.That(cityjson.Version, Is.EqualTo(expectedVersion));
 
-        var feature = cityjson.ToFeature();
+        var features = cityjson.ToFeatures();
+        Assert.That(features.Count, Is.EqualTo(1));
+        var feature = features.First();
         var geom = feature.Geometry;
 
         Assert.That(geom.GeometryType, Is.EqualTo(expectedGeometryType));

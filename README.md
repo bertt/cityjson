@@ -23,6 +23,12 @@ Sample reading CityJSON 2.0 Seq file and converting to NetTopologySuite:
 var cityJsondocuments = CityJsonSeqReader.ReadCityJsonSeq("./fixtures/cityjsonseq/paris_tower.city.jsonl");
 ```
 
+Convert CityJSONDocument to NetTopologySuite:
+
+```
+var features = cityjsonDocument.ToFeatures(vertices, transform);
+```
+
 Converting CityJSON object to NetTopologySuite:
 
 ```

@@ -20,16 +20,16 @@ public static class TileReader
 
     public static List<Feature> GetFeatures(string[] allLines, Transform transform, string? lod = null)
     {
-        var features = new List<Feature>();
+        var allFeatures = new List<Feature>();
 
         for (var i = 1; i < allLines.Length - 1; i++)
         {
             var line = allLines[i];
             var cityObject = JsonConvert.DeserializeObject<CityJsonDocument>(line);
 
-            var feature = cityObject.ToFeature(transform, lod);
-            features.Add(feature);
+            var features = cityObject.ToFeatures(transform, lod);
+            allFeatures.AddRange(features);
         }
-        return features;
+        return allFeatures;
     }
 }

@@ -21,7 +21,9 @@ public class CityJsonSeqTests
         // skip the first document
         foreach (var cityJsonSecond in cityJsondocuments.Skip(1))
         {
-            var feature = cityJsonSecond.ToFeature(transform);
+            var features = cityJsonSecond.ToFeatures(transform);
+            Assert.That(features.Count > 0);
+            var feature = features.First(); 
             var geom = feature.Geometry;
             Assert.That(geom.GeometryType == expectedGeometryType);
         }
@@ -38,10 +40,12 @@ public class CityJsonSeqTests
         Assert.That(cityJsonSecond.CityObjects.Count == 2);
         Assert.That(cityJsonSecond.CityObjects.First().Value.Type == CityObjectType.Building);
 
-        var feature = cityJsonSecond.ToFeature(firstCityJsonDocument.Transform);
+        var features = cityJsonSecond.ToFeatures(firstCityJsonDocument.Transform);
+        Assert.That(features.Count == 2);
+        var feature = features.First();
         var geom = feature.Geometry;
         Assert.That(geom.GeometryType == "MultiPolygon");
-        Assert.That(geom.NumGeometries == 458);
+        Assert.That(geom.NumGeometries == 1);
 
         var wktWriter = new WKTWriter();
         wktWriter.OutputOrdinates = Ordinates.XYZ;
