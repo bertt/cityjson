@@ -46,14 +46,15 @@ namespace CityJSON.Tests
         }
 
         [Test]
-        public void TestTorus() {
+        public void TestTorus()
+        {
             var json = File.ReadAllText("./fixtures/simplegeom/v2.0/cube.city.json");
             var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
             var feature = cityjson.ToFeature();
             var multiPolygon = (MultiPolygon)feature.Geometry;
             var polys = multiPolygon.Geometries;
             // multiPolygon.Geometries.
-            
+
         }
 
 
@@ -187,15 +188,14 @@ namespace CityJSON.Tests
 
             var polys = cityObject.Geometry.ToPolygons(vertices, transform);
             Assert.That(polys.Count == 82701);
-            var features = cityObject.ToFeatures(vertices, transform);
+            var feature = cityObject.ToFeature(vertices, transform);
 
             var wktWriter = new WKTWriter();
             wktWriter.OutputOrdinates = Ordinates.XYZ;
 
-            var feature = features.First();
             var wkt = wktWriter.Write(feature.Geometry);
+            Assert.That(((MultiPolygon)feature.Geometry).Count == 82701);
 
-            Assert.That(wkt == "POLYGON Z((76258.92 369305.04 24.5, 76262.22 369315.44 24.5, 76254.42 369311.33999999997 24.5, 76258.92 369305.04 24.5))");
         }
     }
 }

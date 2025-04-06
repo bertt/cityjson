@@ -26,7 +26,7 @@ var cityJsondocuments = CityJsonSeqReader.ReadCityJsonSeq("./fixtures/cityjsonse
 Converting CityJSON object to NetTopologySuite:
 
 ```
-var features = cityObject.ToFeatures(vertices, transform);
+var feature = cityObject.ToFeature(vertices, transform);
 ```
 
 ## Tools

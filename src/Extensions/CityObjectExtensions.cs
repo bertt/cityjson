@@ -1,25 +1,27 @@
 ﻿using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
 using System.Collections.Generic;
 
 namespace CityJSON.Extensions;
 public static class CityObjectExtensions
 {
-    public static List<Feature> ToFeatures(this CityObject cityObject, List<Vertex> vertices, Transform transform, string lod=null)
+    public static Feature ToFeature(this CityObject cityObject, List<Vertex> vertices, Transform transform, string lod = null)
     {
-        var features = new List<Feature>();
+        var feature = new Feature();
         var geometries = cityObject.Geometry;
-        
+
+        // Todo support other geometry types
         var polygons = geometries.ToPolygons(vertices, transform, lod);
+        var geometryFactory = new GeometryFactory();
+        var multiPolygon = geometryFactory.CreateMultiPolygon(polygons.ToArray());
+        feature.Geometry = multiPolygon;
 
-        foreach ( var polygon in polygons ) {
-            var feature = new Feature();
-            feature.Geometry = polygon;
-            feature.Attributes = new AttributesTable();
-            feature.Attributes.Add("type", cityObject.Type);
-            feature.Attributes.Add("attributes", cityObject.Attributes);
-            features.Add(feature);
-        }
+        feature.Attributes = new AttributesTable
+            {
+                { "type", cityObject.Type },
+                { "attributes", cityObject.Attributes }
+            };
 
-        return features;
+        return feature;
     }
 }
