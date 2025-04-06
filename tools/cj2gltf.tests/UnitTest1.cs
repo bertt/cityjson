@@ -22,6 +22,18 @@ public class Tests
         var stream = new MemoryStream(result);
         var model = ModelRoot.ReadGLB(stream);
         Assert.That(model != null); 
-        // model.SaveGLB(@"torus.glb");
+    }
+
+    [Test]
+    public void TestDelfshaven()
+    {
+        var filePath = "testfixtures/3-20-DELFSHAVEN.city.json";
+        var json = File.ReadAllText(filePath);
+        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var result = GltfCreator.ToGltf(cityjson);
+        Assert.That(result.Count() > 0);
+        var stream = new MemoryStream(result);
+        var model = ModelRoot.ReadGLB(stream);
+        Assert.That(model != null);
     }
 }

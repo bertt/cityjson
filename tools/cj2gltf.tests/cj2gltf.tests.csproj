@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="testfixtures\3-20-DELFSHAVEN.city.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="testfixtures\simplegeom\v2.0\csol.city.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

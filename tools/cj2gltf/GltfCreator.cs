@@ -46,6 +46,14 @@ public static class GltfCreator
         var scene = new SharpGLTF.Scenes.SceneBuilder();
         scene.AddRigidMesh(mesh, Matrix4x4.Identity);
         var model = scene.ToGltf2();
+
+        var localTransform = new Matrix4x4(
+               1, 0, 0, 0,
+               0, 0, -1, 0,
+               0, 1, 0, 0,
+               0, 0, 0, 1);
+        model.LogicalNodes.First().LocalTransform = new SharpGLTF.Transforms.AffineTransform(localTransform);
+
         var bytes = model.WriteGLB();
         return bytes.Array;
     }
