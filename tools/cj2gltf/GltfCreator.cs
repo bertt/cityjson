@@ -44,18 +44,35 @@ public static class GltfCreator
                 {
                     var boundary = boundaries[j];
 
-                    // ignore holes for now
-                    var vertices = boundary[0];
+                    var hasInterriorRings = boundary.Length > 1;
+                    var exteriorRing = boundary[0];
 
                     var vertexList = new List<Vertex>();
 
-                    foreach (var vertex in vertices)
+                    foreach (var vertex in exteriorRing)
                     {
                         var v = allVertices[vertex];
                         vertexList.Add(v);
                     }
+                    var interrings = new List<int>();
 
-                    var indices = Tesselate(vertexList);
+                    if (hasInterriorRings)
+                    {
+                        int count = vertexList.Count;
+                        for (var k = 1; k < boundary.Length; k++)
+                        {
+                            var interiorRing = boundary[k];
+                            interrings.Add(count);
+                            foreach (var vertex in interiorRing)
+                            {
+                                var v = allVertices[vertex];
+                                vertexList.Add(v);
+                                count++;
+                            }
+                        }
+                    }
+
+                    var indices = Tesselate(vertexList, interrings);
 
                     var triangles = GetTriangles(vertexList, indices);
 
@@ -101,7 +118,7 @@ public static class GltfCreator
         return triangles;
     }
 
-    private static List<int> Tesselate(List<Vertex> p)
+    private static List<int> Tesselate(List<Vertex> p, List<int> interiorRings)
     {
         var normal = GetNormal(p);
         var points2D = Flatten(p, normal);
@@ -113,7 +130,7 @@ public static class GltfCreator
             points.Add(vertex.Y);
         }
 
-        var result = Earcut.Tessellate(points.ToArray(), new List<int>());
+        var result = Earcut.Tessellate(points.ToArray(), interiorRings);
         return result;
     }
 

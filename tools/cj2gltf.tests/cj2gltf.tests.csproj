@@ -43,6 +43,9 @@
     <None Update="testfixtures\simplegeom\v2.0\tetra.city.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="testfixtures\simplegeom\v2.0\torus_small.city.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="testfixtures\simplegeom\v2.0\torus.city.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
