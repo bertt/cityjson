@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 
 namespace cj2gltf;
-public class Triangle
+internal class Triangle
 {
     public Vector3 A { get; set; }
     public Vector3 B { get; set; }

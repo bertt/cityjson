@@ -39,7 +39,7 @@ var feature = cityObject.ToFeature(vertices, transform);
 
 - cj2pg: from CityJSON to PostGIS
 
-- cj2gltf: from CityJSON to glTF
+- cj2glb: from CityJSON to GLB
 
 ## Known limitations
 

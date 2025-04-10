@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\cj2gltf\cj2gltf.csproj" />
+    <ProjectReference Include="..\cj2glb\cj2glb.csproj" />
   </ItemGroup>
 
   <ItemGroup>
