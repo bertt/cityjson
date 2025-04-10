@@ -1,70 +1,162 @@
 ﻿using CityJSON;
+using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Geometry;
 using SharpGLTF.Materials;
 using System.Numerics;
-using Triangulate;
-using Wkx;
-using CityJSON.Extensions;
+using CityJSON.Geometry;
+using EarcutNet;
 
 namespace cj2gltf;
-
-using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPosition;
-
 public static class GltfCreator
 {
-    public static byte[] ToGltf(CityJsonDocument cityjsonDocument)
+    public static byte[] ToGltf(CityJsonDocument cityJsonDocument)
     {
-        var transform = cityjsonDocument!.Transform;
-        var features = cityjsonDocument.ToFeatures(transform);
-
-        var polygons = new List<MultiPolygon>();
-        foreach (var feature in features)
-        {
-            var wkt = feature.Geometry.AsText();
-            var g = (MultiPolygon)Geometry.Deserialize<WktSerializer>(wkt);
-            var wkb = g.AsBinary();
-            var wkbTriangulated = Triangulator.Triangulate(wkb);
-            var triangulatedGeometry = (MultiPolygon)Geometry.Deserialize<WkbSerializer>(wkbTriangulated);
-            polygons.Add(triangulatedGeometry);
-        }
-        var bytes = CreateGltf(polygons);
-        return bytes;
-    }
-    public static byte[] CreateGltf(List<MultiPolygon> geometries)
-    {
-        // convert to glTF to be able to inspect the result...
+        var scene = new SharpGLTF.Scenes.SceneBuilder();
+        var meshBuilder = new MeshBuilder<VertexPosition>("mesh");
         var material1 = new MaterialBuilder()
            .WithDoubleSide(true)
            .WithMetallicRoughnessShader()
            .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(0.7f, 0, 0f, 1.0f))
            .WithEmissive(new Vector3(0.2f, 0.3f, 0.1f));
 
-        var mesh = new MeshBuilder<VERTEX>("mesh");
-        var prim = mesh.UsePrimitive(material1);
-        foreach(var geom in geometries)
-        {
-            foreach (var t in geom.Geometries)
-            {
-                prim.AddTriangle(
-                new VERTEX((float)t.ExteriorRing.Points[0].X, (float)t.ExteriorRing.Points[0].Y, (float)t.ExteriorRing.Points[0].Z),
-                new VERTEX((float)t.ExteriorRing.Points[1].X, (float)t.ExteriorRing.Points[1].Y, (float)t.ExteriorRing.Points[1].Z),
-                    new VERTEX((float)t.ExteriorRing.Points[2].X, (float)t.ExteriorRing.Points[2].Y, (float)t.ExteriorRing.Points[2].Z));
-            }
+        var prim = meshBuilder.UsePrimitive(material1);
 
+        var allVertices = cityJsonDocument.Vertices;
+        var appearance = cityJsonDocument.Appearance;
+        var transform = cityJsonDocument.Transform;
+
+        var translate = transform.TranslateVector3();
+        var scale = transform.ScaleVector3();
+
+        foreach (var co in cityJsonDocument.CityObjects)
+        {
+            var cityObject = co.Value;
+            var geometries = cityObject.Geometry;
+
+            for (var i = 0; i < geometries.Count; i++)
+            {
+                var geometry = geometries[i];
+                // Composite Geometry
+                var solidGeometry = (SolidGeometry)geometry;
+                var boundaries = solidGeometry.Boundaries[0];
+
+                for (var j = 0; j < boundaries.Length; j++)
+                {
+                    var boundary = boundaries[j];
+
+                    // ignore holes for now
+                    var vertices = boundary[0];
+
+                    var vertexList = new List<Vertex>();
+
+                    foreach (var vertex in vertices)
+                    {
+                        var v = allVertices[vertex];
+                        vertexList.Add(v);
+                    }
+
+                    var indices = Tesselate(vertexList);
+
+                    var triangles = GetTriangles(vertexList, indices);
+
+                    foreach (var triangle in triangles)
+                    {
+                        var vp0 = new VertexPosition(triangle.A * scale + translate);
+                        var vp1 = new VertexPosition(triangle.B * scale + translate);
+                        var vp2 = new VertexPosition(triangle.C * scale + translate);
+
+                        prim.AddTriangle(vp0, vp1, vp2);
+                    }
+
+                }
+            }
         }
 
-        var scene = new SharpGLTF.Scenes.SceneBuilder();
-        scene.AddRigidMesh(mesh, Matrix4x4.Identity);
+        scene.AddRigidMesh(meshBuilder, Matrix4x4.Identity);
         var model = scene.ToGltf2();
-
         var localTransform = new Matrix4x4(
-               1, 0, 0, 0,
-               0, 0, -1, 0,
-               0, 1, 0, 0,
-               0, 0, 0, 1);
-        model.LogicalNodes.First().LocalTransform = new SharpGLTF.Transforms.AffineTransform(localTransform);
+            1, 0, 0, 0,
+            0, 0, -1, 0,
+            0, 1, 0, 0,
+            0, 0, 0, 1);
+        model.ApplyBasisTransform(localTransform);
+        var bytes = model.WriteGLB().Array;
+        return bytes;
+    }
 
-        var bytes = model.WriteGLB();
-        return bytes.Array;
+    private static List<Triangle> GetTriangles(List<Vertex> vertices, List<int> indices)
+    {
+        var triangles = new List<Triangle>();
+
+        for (int k = 0; k < indices.Count; k += 3)
+        {
+            var v0 = vertices[indices[k]].ToVector3();
+            var v1 = vertices[indices[k + 1]].ToVector3();
+            var v2 = vertices[indices[k + 2]].ToVector3();
+
+            var triangle = new Triangle(v0, v1, v2);
+            triangles.Add(triangle);
+        }
+
+        return triangles;
+    }
+
+    private static List<int> Tesselate(List<Vertex> p)
+    {
+        var normal = GetNormal(p);
+        var points2D = Flatten(p, normal);
+
+        var points = new List<double>();
+        foreach (var vertex in points2D)
+        {
+            points.Add(vertex.X);
+            points.Add(vertex.Y);
+        }
+
+        var result = Earcut.Tessellate(points.ToArray(), new List<int>());
+        return result;
+    }
+
+    private static List<Vector2> Flatten(List<Vertex> p, Vector3 normal)
+    {
+        var points = new List<Vector2>();
+        if (Math.Abs(normal.X) > Math.Abs(normal.Y) && Math.Abs(normal.X) > Math.Abs(normal.Z))
+        {
+            //  (yz) projection
+            foreach (var vertex in p)
+            {
+                points.Add(new Vector2((float)vertex.Y, (float)vertex.Z));
+            }
+        }
+        else if (Math.Abs(normal.Y) > Math.Abs(normal.Z))
+        {
+            foreach (var vertex in p)
+            {
+                points.Add(new Vector2((float)vertex.X, (float)vertex.Z));
+            }
+            // # (zx) projection
+        }
+        else
+        {
+            // (xy) projextion
+            foreach (var vertex in p)
+            {
+                points.Add(new Vector2((float)vertex.X, (float)vertex.Y));
+            }
+        }
+
+
+        return points;
+    }
+    private static Vector3 GetNormal(List<Vertex> p)
+    {
+        var v0 = p[0].ToVector3();
+        var v1 = p[1].ToVector3();
+        var v2 = p[2].ToVector3();
+        var u = v1 - v0;
+        var v = v2 - v0;
+        var normal = Vector3.Cross(u, v);
+        normal = Vector3.Normalize(normal);
+        return normal;
     }
 }

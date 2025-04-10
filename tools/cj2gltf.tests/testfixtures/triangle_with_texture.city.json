@@ -1,0 +1,47 @@
+{
+  "type": "CityJSON",
+  "version": "2.0",
+  "CityObjects": {
+    "{10A31B7E-8FC2-45EE-836A-1DB9FEF06E04}": {
+      "type": "Building",
+      "geometry": [
+        {
+          "type": "MultiSurface",
+          "boundaries": [
+            [ [ 0, 1, 2 ] ]
+          ],
+          "texture": {
+            "rgbTexture": {
+              "values": [
+                [ [ 0, 0, 1, 2 ] ]
+              ]
+            }
+          },
+          "lod": "2"
+        }
+      ]
+    }
+  },
+  "vertices": [
+    [ 0,0,0 ],
+    [ 1000,0,0 ],
+    [ 1000,1000,0 ]
+  ],
+  "transform": {
+    "scale": [ 0.001, 0.001, 0.001 ],
+    "translate": [ 0, 0, 0.0 ]
+  },
+  "appearance": {
+    "textures": [
+      {
+        "type": "JPG",
+        "image": "roof.jpg"
+      }
+    ],
+    "vertices-texture": [
+      [ 0.0, 0.0 ],
+      [ 1.0, 0.0 ],
+      [ 1.0, 1.0 ]
+    ]
+  }
+}
