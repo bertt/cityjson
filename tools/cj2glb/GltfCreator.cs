@@ -88,7 +88,6 @@ public static class GltfCreator
             }
             else
             {
-
                 throw new NotImplementedException($"Geometry type {geometry.GetType()} is not implemented.");
             }
         }
@@ -131,9 +130,7 @@ public static class GltfCreator
     private static List<Triangle> GetTriangles(SolidGeometry solidGeometry, List<Vertex> allVertices)
     {
         var result = new List<Triangle>();
-        var boundaries = solidGeometry.Boundaries[0];
-
-        foreach (var boundary in boundaries)
+        foreach (var boundary in solidGeometry.Boundaries)
         {
             var triangles = GetTriangles(boundary, allVertices);
             result.AddRange(triangles);
@@ -246,11 +243,11 @@ public static class GltfCreator
         }
         else if (Math.Abs(normal.Y) > Math.Abs(normal.Z))
         {
+            // # (zx) projection
             foreach (var vertex in p)
             {
                 points.Add(new Vector2((float)vertex.X, (float)vertex.Z));
             }
-            // # (zx) projection
         }
         else
         {
