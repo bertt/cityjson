@@ -41,13 +41,15 @@ var feature = cityObject.ToFeature(vertices, transform);
 
 - cj2glb: from CityJSON to GLB
 
-## Known limitations
+## Supports
 
 - Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid;
 
-- Support for interrior rings;
+- Support for interior rings;
 
 - Appearance support: Textures, Vertices-Texture; 
+
+## Limitations
 
 - No support for metadata, semantics, extensions, materials;
 
