@@ -43,7 +43,7 @@ jobs:
       run: echo "::set-output name=FullSemVer::$(dotnet-gitversion /output json /showvariable FullSemVer)"
 
     - name: Build ${{ matrix.project.name }}
-      run: dotnet publish ./${{ matrix.project.path }} -c Release --self-contained -p:PublishAot=false -r ${{ matrix.rid }} -p:Version=${{ steps.gitversion.outputs.FullSemVer }} -o ./publish/${{ matrix.project.name }}
+      run: dotnet publish ./${{ matrix.project.path }} -c Release --self-contained -p:PublishSingleFile=true -p:PublishAot=false -r ${{ matrix.rid }} -p:Version=${{ steps.gitversion.outputs.FullSemVer }} -o ./publish/${{ matrix.project.name }}
 
     - name: Zip ${{ matrix.project.name }} Artifact
       if: runner.os != 'Windows'
