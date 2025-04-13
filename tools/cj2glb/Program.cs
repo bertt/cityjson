@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CityJSON;
-using cj2gltf;
+using cj2glb;
 using Newtonsoft.Json;
 using System.CommandLine;
 
@@ -24,7 +24,13 @@ async Task RunAsync(string inputFile, string outputFile)
 
     var json = File.ReadAllText(inputFile);
     var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-    byte[] bytes = GltfCreator.ToGltf(cityjsonDocument);
+
+    // check if there are textures
+    var hasTextures = cityjsonDocument.Appearance != null && cityjsonDocument.Appearance.Textures != null && cityjsonDocument.Appearance.Textures.Count > 0;
+
+    var bytes = hasTextures?
+        TexturedGltfCreator.ToGltf(cityjsonDocument):
+        GltfCreator.ToGltf(cityjsonDocument);
     File.WriteAllBytes(outputFile, bytes);
 
     Console.WriteLine("Program finished." + bytes.Length);

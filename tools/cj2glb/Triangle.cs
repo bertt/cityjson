@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace cj2gltf;
+namespace cj2glb;
 internal class Triangle
 {
     public Vector3 A { get; set; }

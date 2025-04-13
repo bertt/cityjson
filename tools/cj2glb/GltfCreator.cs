@@ -4,9 +4,8 @@ using SharpGLTF.Geometry;
 using SharpGLTF.Materials;
 using System.Numerics;
 using CityJSON.Geometry;
-using EarcutNet;
 
-namespace cj2gltf;
+namespace cj2glb;
 public static class GltfCreator
 {
     public static byte[] ToGltf(CityJsonDocument cityJsonDocument)
@@ -191,7 +190,7 @@ public static class GltfCreator
             }
         }
 
-        var indices = Tesselate(vertexList, interrings);
+        var indices = Tesselator.Tesselate(vertexList, interrings);
 
         var triangles = GetTriangles(vertexList, indices);
         return triangles;
@@ -212,64 +211,5 @@ public static class GltfCreator
         }
 
         return triangles;
-    }
-
-    private static List<int> Tesselate(List<Vertex> p, List<int> interiorRings)
-    {
-        var normal = GetNormal(p);
-        var points2D = Flatten(p, normal);
-
-        var points = new List<double>();
-        foreach (var vertex in points2D)
-        {
-            points.Add(vertex.X);
-            points.Add(vertex.Y);
-        }
-
-        var result = Earcut.Tessellate(points.ToArray(), interiorRings);
-        return result;
-    }
-
-    private static List<Vector2> Flatten(List<Vertex> p, Vector3 normal)
-    {
-        var points = new List<Vector2>();
-        if (Math.Abs(normal.X) > Math.Abs(normal.Y) && Math.Abs(normal.X) > Math.Abs(normal.Z))
-        {
-            //  (yz) projection
-            foreach (var vertex in p)
-            {
-                points.Add(new Vector2((float)vertex.Y, (float)vertex.Z));
-            }
-        }
-        else if (Math.Abs(normal.Y) > Math.Abs(normal.Z))
-        {
-            // # (zx) projection
-            foreach (var vertex in p)
-            {
-                points.Add(new Vector2((float)vertex.X, (float)vertex.Z));
-            }
-        }
-        else
-        {
-            // (xy) projextion
-            foreach (var vertex in p)
-            {
-                points.Add(new Vector2((float)vertex.X, (float)vertex.Y));
-            }
-        }
-
-
-        return points;
-    }
-    private static Vector3 GetNormal(List<Vertex> p)
-    {
-        var v0 = p[0].ToVector3();
-        var v1 = p[1].ToVector3();
-        var v2 = p[2].ToVector3();
-        var u = v1 - v0;
-        var v = v2 - v0;
-        var normal = Vector3.Cross(u, v);
-        normal = Vector3.Normalize(normal);
-        return normal;
     }
 }
