@@ -23,7 +23,6 @@ public class Tests
           .EvaluateTriangles(model!.DefaultScene)
           .ToArray().Count();
         Assert.That(triangles == trianglesActual);
-
     }
 
     [TestCase("testfixtures/simplegeom/v2.0/cube.city.json", 12)]

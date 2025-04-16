@@ -1,5 +1,9 @@
 {
   "profiles": {
+    "lyon_centre": {
+      "commandName": "Project",
+      "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5432\" -t public.lyon_centre -i D:\\aaa\\lyon_centre\\output"
+    },
     "Paris": {
       "commandName": "Project",
       "commandLineArgs": " -c \"Host=localhost;Username=postgres;Password=postgres;Database=postgres;Port=5439\" -t public.paris -i D:\\aaa\\las_eiffel\\output\\tiles"

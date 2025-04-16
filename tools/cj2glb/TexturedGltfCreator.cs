@@ -40,11 +40,32 @@ public class TexturedGltfCreator
     {
         var geometries = cityObject.Geometry;
 
-        foreach (var geom in geometries)
+        if(geometries != null)
         {
-            // Assume MultiSurface, todo add support for other types
-            var multiSurfaceGeometry = (MultiSurfaceGeometry)geom;
-            var boundaries = multiSurfaceGeometry.Boundaries;
+            
+            foreach (var geom in geometries)
+            {
+                if(geom != null)
+                {
+                    if (geom is MultiSurfaceGeometry compositeSolidGeometry)
+                    {
+                        var multiSurfaceGeometry = (MultiSurfaceGeometry)geom;
+                        HandleMultiSurface(multiSurfaceGeometry, meshBuilder, allVertices, appearance, transform, texturesBaseDirectory);
+                    }
+                    else
+                    {
+                        // Todo handle other geometry types
+                    }
+                }
+            }
+        }
+    }
+
+    private static void HandleMultiSurface(MultiSurfaceGeometry multiSurfaceGeometry, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
+    {
+        var boundaries = multiSurfaceGeometry.Boundaries;
+        if(multiSurfaceGeometry.Texture != null)
+        {
             var textures = multiSurfaceGeometry.Texture.First().Value;
 
             for (var i = 0; i < boundaries.Count(); i++)
@@ -54,37 +75,40 @@ public class TexturedGltfCreator
                     var boundary = boundaries[i][j];
                     var texture = textures[i][j];
 
-                    var imageId = (int)texture[0];
-                    var textureIds = texture.Skip(1).ToArray();
-
-                    var vertices = new List<Vertex>();
-                    foreach (var vertex in boundary)
+                    if (texture[0] != null)
                     {
-                        vertices.Add(allVertices[vertex]);
-                    }
-                    // todo: handle interior rings
-                    var interiorRings = new List<int>();
-                    var indices = Tesselator.Tesselate(vertices, interiorRings);
+                        var imageId = (int)texture[0];
+                        var textureIds = texture.Skip(1).ToArray();
 
-                    for (var l = 0; l < indices.Count; l += 3)
-                    {
-                        var index0 = indices[l];
-                        var index1 = indices[l + 1];
-                        var index2 = indices[l + 2];
+                        var vertices = new List<Vertex>();
+                        foreach (var vertex in boundary)
+                        {
+                            vertices.Add(allVertices[vertex]);
+                        }
+                        // todo: handle interior rings
+                        var interiorRings = new List<int>();
+                        var indices = Tesselator.Tesselate(vertices, interiorRings);
 
-                        var v0 = vertices[index0].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                        var v1 = vertices[index1].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                        var v2 = vertices[index2].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                        for (var l = 0; l < indices.Count; l += 3)
+                        {
+                            var index0 = indices[l];
+                            var index1 = indices[l + 1];
+                            var index2 = indices[l + 2];
 
-                        var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
-                        var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
-                        var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
+                            var v0 = vertices[index0].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                            var v1 = vertices[index1].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                            var v2 = vertices[index2].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
 
-                        var materialText = new MaterialBuilder().WithDoubleSide(true);
-                        var image = texturesBaseDirectory + appearance.Textures[imageId].Image;
-                        materialText.WithChannelImage(KnownChannel.BaseColor, image);
-                        var prim = meshBuilder.UsePrimitive(materialText);
-                        prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
+                            var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
+                            var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
+                            var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
+
+                            var materialText = new MaterialBuilder().WithDoubleSide(true);
+                            var image = texturesBaseDirectory + appearance.Textures[imageId].Image;
+                            materialText.WithChannelImage(KnownChannel.BaseColor, image);
+                            var prim = meshBuilder.UsePrimitive(materialText);
+                            prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
+                        }
                     }
                 }
             }

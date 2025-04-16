@@ -4,7 +4,7 @@ public enum CityObjectType
     Bridge,
     BridgePart,
     BridgeInstallation,
-    BridgeConstructionElement,
+    BridgeConstructiveElement,
     BridgeRoom,
     BridgeFurniture,
     
