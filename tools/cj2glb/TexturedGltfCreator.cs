@@ -8,7 +8,7 @@ using CityJSON.Geometry;
 namespace cj2glb;
 public class TexturedGltfCreator
 {
-    public static byte[] ToGltf(CityJsonDocument cityJsonDocument, string texturesBaseDirectory = "")
+    public static byte[] ToGltf(CityJsonDocument cityJsonDocument, string texturesBaseDirectory = "", string id = null)
     {
         var allVertices = cityJsonDocument.Vertices;
         var appearance = cityJsonDocument.Appearance;
@@ -17,7 +17,14 @@ public class TexturedGltfCreator
         var scene = new SharpGLTF.Scenes.SceneBuilder();
         var meshBuilder = new MeshBuilder<VertexPosition, VertexTexture1>("mesh");
 
-        foreach (var cityObject in cityJsonDocument.CityObjects)
+        var cityObjects = cityJsonDocument.CityObjects;
+
+        if (id != null)
+        {
+            cityObjects = cityObjects.Where(x => x.Key == id).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        foreach (var cityObject in cityObjects)
         {
             var co = cityObject.Value;
             ProcessTexturedCityObject(co, meshBuilder, allVertices, appearance, transform, texturesBaseDirectory);
@@ -104,7 +111,7 @@ public class TexturedGltfCreator
                             var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
 
                             var materialText = new MaterialBuilder().WithDoubleSide(true);
-                            var image = texturesBaseDirectory + appearance.Textures[imageId].Image;
+                            var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
                             materialText.WithChannelImage(KnownChannel.BaseColor, image);
                             var prim = meshBuilder.UsePrimitive(materialText);
                             prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));

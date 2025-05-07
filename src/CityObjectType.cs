@@ -1,6 +1,7 @@
 ﻿namespace CityJSON;
 public enum CityObjectType
 {
+    GroundSurface,
     Bridge,
     BridgePart,
     BridgeInstallation,

@@ -2,7 +2,11 @@
   "profiles": {
     "cj2gltf": {
       "commandName": "Project",
-      "commandLineArgs": "./samples/cube.city.json cube.city.glb"
+      "commandLineArgs": "./samples/cube.city.json cube.city.glb --id id-1"
+    },
+    "delfshaven_textures": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\bert\\Desktop\\delfshaven\\3-20-DELFSHAVEN.json delfshaven.glb"
     }
   }
 }

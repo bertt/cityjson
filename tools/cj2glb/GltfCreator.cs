@@ -8,7 +8,7 @@ using CityJSON.Geometry;
 namespace cj2glb;
 public static class GltfCreator
 {
-    public static byte[] ToGltf(CityJsonDocument cityJsonDocument)
+    public static byte[] ToGltf(CityJsonDocument cityJsonDocument, string id = null)
     {
         var scene = new SharpGLTF.Scenes.SceneBuilder();
         var meshBuilder = new MeshBuilder<VertexPosition>("mesh");
@@ -27,7 +27,13 @@ public static class GltfCreator
 
         var allTriangles = new List<Triangle>();
 
-        foreach (var cityObject in cityJsonDocument.CityObjects)
+        var cityObjects = cityJsonDocument.CityObjects;
+        if (id != null)
+        {
+            cityObjects = cityObjects.Where(x => x.Key == id).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        foreach (var cityObject in cityObjects)
         {
             var co = cityObject.Value;
             var triangles = GetTriangles(co, allVertices);
