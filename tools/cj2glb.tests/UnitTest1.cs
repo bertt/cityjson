@@ -7,8 +7,25 @@ namespace cj2gltf.tests;
 
 public class Tests
 {
-    //[TestCase("testfixtures/triangle_with_texture.city.json", 1)]
-    //[TestCase("testfixtures/square_with_texture.city.json", 2)]
+
+    [TestCase("testfixtures/fzkhaus/01-FZK-Haus-LoD2-Tex-no-Storey-CG30-V01_formatted.json", 20)]
+    public void FzkHausTextureToGltfTest(string filePath, int triangles)
+    {
+        var texturesBaseDirectory = "./testfixtures/fzkhaus";
+        var json = File.ReadAllText(filePath);
+        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var result = TexturedGltfCreator.ToGltf(cityjson!, texturesBaseDirectory);
+        Assert.That(result.Count() > 0);
+        var stream = new MemoryStream(result);
+        var model = ModelRoot.ReadGLB(stream);
+        Assert.That(model != null);
+        var trianglesActual = Toolkit
+          .EvaluateTriangles(model!.DefaultScene)
+          .ToArray().Count();
+        Assert.That(triangles == trianglesActual);
+    }
+
+
     [TestCase("testfixtures/3-20-DELFSHAVEN.city.json", 6)]
     public void TextureToGltfTest(string filePath, int triangles)
     {
@@ -25,7 +42,7 @@ public class Tests
           .EvaluateTriangles(model!.DefaultScene)
           .ToArray().Count();
         Assert.That(triangles == trianglesActual);
-        model.SaveGLB(@"d:\aaa\delfshave.glb");
+        // model.SaveGLB(@"d:\aaa\delfshave.glb");
     }
 
     [TestCase("testfixtures/simplegeom/v2.0/cube.city.json", 12)]

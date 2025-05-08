@@ -64,6 +64,7 @@ public class TexturedGltfCreator
                     }
                     else
                     {
+                        throw new NotImplementedException($"Geometry type {geom.GetType()} is not implemented.");   
                         // Todo handle other geometry types
                     }
                 }

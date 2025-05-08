@@ -37,6 +37,54 @@
     <None Update="testfixtures\appearances\0320_7_8.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="testfixtures\fzkhaus\01-FZK-Haus-LoD2-Tex-no-Storey-CG30-V01_formatted.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\665-dach-ost-256-128.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Back-1024x512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Front-1024x512.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Front.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Left-1024x1024.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Left.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Right-1024x1024.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\FZK-Haus-Right.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\haeuse-nord-01-128-256.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\Haeuse-sued-01-128-256.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\haeuser-dach-west-256-128.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\haeuser-ost-01-256-128.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\haeuser-west-01-256-128.JPG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="testfixtures\fzkhaus\textures\Roofing_Shingles_GAF_Estates.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="testfixtures\roof.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

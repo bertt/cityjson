@@ -41,6 +41,29 @@ var feature = cityObject.ToFeature(vertices, transform);
 
 - cj2glb: from CityJSON to GLB
 
+Sample usage cj2glb:
+
+- Download CityGML from https://www.citygmlwiki.org/index.php?title=FZK_Haus,_CityGML_3.0,_LoD2,_No_Storeys,_Boundary_Surfaces
+and unzip
+
+- Convert to CityJSON using citygml4j/citygml-tools:
+
+```
+$ docker run -v /data/fzkhaus:/data citygml4j/citygml-tools:2.4.0 to-cityjson /data/01-FZK-Haus-LoD2-Tex-no-Storey-CG30-V01.gml 
+```
+
+Result: 01-FZK-Haus-LoD2-Tex-no-Storey-CG30-V01.json
+
+- Convert to GLB using cj2glb:
+
+```
+cj2glb 01-FZK-Haus-LoD2-Tex-no-Storey-CG30-V01.json fzk_haus.glb
+```
+
+Result: fzk_haus.glb
+
+![fzkhaus.png](fzkhaus.png)
+
 ## Supports
 
 - Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid;

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/doc/">
+    <File Path="fzkhaus.png" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/tools/">
