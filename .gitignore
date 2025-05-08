@@ -351,3 +351,4 @@ MigrationBackup/
 *.ncrunchsolution
 *.ncrunchproject
 /samples/cityjson2pg/Properties/launchSettings.json
+/tools/cj2glb/Properties/launchSettings.json
