@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CityJSON.Geometry;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,8 +18,14 @@ namespace CityJSON.Convertors
         {
             var jsonObject = JObject.Load(reader);
             var type = jsonObject["type"].ToString().ToLowerInvariant();
+            Dictionary<string, object> textureObject = null;
 
             Geometry.Geometry obj = null;
+
+            if (jsonObject["texture"] != null)
+            {
+                textureObject = jsonObject["texture"].ToObject<Dictionary<string, Object>>();
+            }
 
             switch (type)
             {
@@ -26,6 +33,11 @@ namespace CityJSON.Convertors
                     {
                         var boundaries = jsonObject["boundaries"].ToObject<int[][][][]>();
                         obj = new SolidGeometry() { Type = GeometryType.Solid, Boundaries = boundaries };
+
+                        if (textureObject != null)
+                        {
+                            ((SolidGeometry)obj).Texture = ReadTextureSolid(jsonObject["texture"].ToObject<Dictionary<string, object>>());
+                        }
                         break;
                     }
 
@@ -40,6 +52,10 @@ namespace CityJSON.Convertors
                     {
                         var boundaries = jsonObject["boundaries"].ToObject<int[][][]>();
                         obj = new MultiSurfaceGeometry() { Type = GeometryType.MultiSurface, Boundaries = boundaries };
+                        if(textureObject != null)
+                        {
+                            ((MultiSurfaceGeometry)obj).Texture = ReadTexture(jsonObject["texture"].ToObject<Dictionary<string, object>>());
+                        }   
                         break;
                     }
                 case "multisolid":
@@ -62,13 +78,6 @@ namespace CityJSON.Convertors
                 obj.Lod = jsonObject["lod"].ToString();
             }
 
-            if(jsonObject["texture"] != null)
-            {
-                var textureObject = jsonObject["texture"].ToObject<Dictionary<string, Object>>();
-                var texture = ReadTexture(textureObject);   
-                obj.Texture = texture;
-            }
-
             return obj;
         }
 
@@ -79,15 +88,23 @@ namespace CityJSON.Convertors
             throw new NotImplementedException();
         }
 
+
+        private Dictionary<string, int?[][][][]> ReadTextureSolid(Dictionary<string, object> texture)
+        {
+            return ReadTextureGeneric<int?[][][][]>(texture);
+        }
+
         private Dictionary<string, int?[][][]> ReadTexture(Dictionary<string, object> texture)
         {
-            var result = new Dictionary<string, int?[][][]>();
-            foreach (var textureObject in texture)
-            {
-                var values = ((JObject)textureObject.Value)["values"].ToObject<int?[][][]>();
-                result.Add(textureObject.Key, values);
-            }
-            return result;
+            return ReadTextureGeneric<int?[][][]>(texture);
+        }
+
+        private Dictionary<string, T> ReadTextureGeneric<T>(Dictionary<string, object> texture)
+        {
+            return texture.ToDictionary(
+                t => t.Key,
+                t => ((JObject)t.Value)["values"].ToObject<T>()
+            );
         }
     }
 }

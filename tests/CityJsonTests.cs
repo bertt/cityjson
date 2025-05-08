@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using CityJSON.Extensions;
+using CityJSON.Geometry;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
@@ -59,8 +60,6 @@ namespace CityJSON.Tests
 
         }
 
-
-
         [Test]
         public void ReadDelftshavenTest()
         {
@@ -70,9 +69,10 @@ namespace CityJSON.Tests
             Assert.That(firstCityObject.Type == CityObjectType.Building);
             var firstGeometry = firstCityObject.Geometry.First();
             Assert.That(firstGeometry.Type == Geometry.GeometryType.MultiSurface);
-            var texture = firstGeometry.Texture;
+            var geometry = firstGeometry as MultiSurfaceGeometry;
+            var texture = geometry.Texture;
             Assert.That(texture != null);
-            Assert.That(texture.Count == 1);
+            Assert.That(geometry.Texture.Count == 1);
             Assert.That(texture.First().Key == "rgbTexture");
             var firstTexture = texture.First().Value;
             Assert.That(firstTexture[0][0][0] == 50);
