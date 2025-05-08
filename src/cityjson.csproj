@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>CityJSON</PackageTags>
     <PackageReleaseNotes>initial release</PackageReleaseNotes>
-	<PackageVersion>2.1</PackageVersion>
+	<PackageVersion>2.2</PackageVersion>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
