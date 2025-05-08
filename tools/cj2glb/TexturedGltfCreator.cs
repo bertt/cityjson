@@ -110,6 +110,11 @@ public class TexturedGltfCreator
                             var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
                             var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
 
+                            // vector2 originates from the bottom left corner
+                            t0 = new Vector2(t0.X, 1 - t0.Y);
+                            t1 = new Vector2(t1.X, 1 - t1.Y);
+                            t2 = new Vector2(t2.X, 1 - t2.Y);
+
                             var materialText = new MaterialBuilder().WithDoubleSide(true);
                             var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
                             materialText.WithChannelImage(KnownChannel.BaseColor, image);
