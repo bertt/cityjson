@@ -80,6 +80,8 @@ Result: fzk_haus.glb
 
 ## History
 
+2025-05-06: release 2.2 - Adding textures support
+
 2025-01-15: release 2.1 - Reading CityJSON 2.0 Seq files
 
 2024-12-06: release 2.0 - Refactoring - Reading geometries
