@@ -62,12 +62,34 @@ public class TexturedGltfCreator
                     {
                         HandleSolid(solidGeometry, meshBuilder, allVertices, appearance, transform, texturesBaseDirectory);
                     }
+                    else if(geom is CompositeSurfaceGeometry compositeSurfaceGeometry)
+                    {
+                        HandleCompositeSurface(compositeSurfaceGeometry, meshBuilder, allVertices, appearance, transform, texturesBaseDirectory);
+                    }
                     else
                     {
-                        throw new NotImplementedException($"Geometry type {geom.GetType()} is not implemented.");   
+                        throw new NotImplementedException($"Geometry type {geom.GetType()} is not implemented.");
                         // Todo handle other geometry types
                     }
                 }
+            }
+        }
+    }
+
+    private static void HandleCompositeSurface(CompositeSurfaceGeometry compositeSurfaceGeometry, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
+    {
+        var boundaries = compositeSurfaceGeometry.Boundaries;
+
+        if (compositeSurfaceGeometry.Texture != null)
+        {
+            var texture = compositeSurfaceGeometry.Texture.First().Value;
+
+            for (var i = 0; i < boundaries.Count(); i++)
+            {
+                var boundary = boundaries[i];
+                var itexture = texture[i];
+
+                HandleTextures(meshBuilder, allVertices, appearance, transform, texturesBaseDirectory, boundary, itexture);
             }
         }
     }
@@ -106,50 +128,64 @@ public class TexturedGltfCreator
     {
         for (var i = 0; i < boundaries.Count(); i++)
         {
-            for (var j = 0; j < boundaries[i].Count(); j++)
+            var bnd = boundaries[i];
+            var texture = firstTexture[i];
+
+            HandleTextures(meshBuilder, allVertices, appearance, transform, texturesBaseDirectory, bnd, texture);
+        }
+    }
+
+    private static void HandleTextures(MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][] bnd, int?[][] texture1)
+    {
+        for (var j = 0; j < bnd.Count(); j++)
+        {
+            var boundary = bnd[j];
+
+            // exception for railway to prevent out of bounds
+            if(texture1.Length <= j)
             {
-                var boundary = boundaries[i][j];
-                var texture = firstTexture[i][j];
+                break;
+            }
+            var texture = texture1[j];
 
-                if (texture[0] != null)
+            if (texture[0] != null)
+            {
+                var imageId = (int)texture[0];
+                var textureIds = texture.Skip(1).ToArray();
+
+                var vertices = new List<Vertex>();
+                foreach (var vertex in boundary)
                 {
-                    var imageId = (int)texture[0];
-                    var textureIds = texture.Skip(1).ToArray();
+                    vertices.Add(allVertices[vertex]);
+                }
+                // todo: handle interior rings
+                var interiorRings = new List<int>();
+                var indices = Tesselator.Tesselate(vertices, interiorRings);
 
-                    var vertices = new List<Vertex>();
-                    foreach (var vertex in boundary)
-                    {
-                        vertices.Add(allVertices[vertex]);
-                    }
-                    // todo: handle interior rings
-                    var interiorRings = new List<int>();
-                    var indices = Tesselator.Tesselate(vertices, interiorRings);
+                for (var l = 0; l < indices.Count; l += 3)
+                {
+                    var index0 = indices[l];
+                    var index1 = indices[l + 1];
+                    var index2 = indices[l + 2];
 
-                    for (var l = 0; l < indices.Count; l += 3)
-                    {
-                        var index0 = indices[l];
-                        var index1 = indices[l + 1];
-                        var index2 = indices[l + 2];
+                    var v0 = vertices[index0].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                    var v1 = vertices[index1].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                    var v2 = vertices[index2].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
 
-                        var v0 = vertices[index0].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                        var v1 = vertices[index1].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                        var v2 = vertices[index2].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                    var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
+                    var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
+                    var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
 
-                        var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
-                        var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
-                        var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
+                    // vector2 originates from the bottom left corner
+                    t0 = new Vector2(t0.X, 1 - t0.Y);
+                    t1 = new Vector2(t1.X, 1 - t1.Y);
+                    t2 = new Vector2(t2.X, 1 - t2.Y);
 
-                        // vector2 originates from the bottom left corner
-                        t0 = new Vector2(t0.X, 1 - t0.Y);
-                        t1 = new Vector2(t1.X, 1 - t1.Y);
-                        t2 = new Vector2(t2.X, 1 - t2.Y);
-
-                        var materialText = new MaterialBuilder().WithDoubleSide(true);
-                        var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
-                        materialText.WithChannelImage(KnownChannel.BaseColor, image);
-                        var prim = meshBuilder.UsePrimitive(materialText);
-                        prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
-                    }
+                    var materialText = new MaterialBuilder().WithDoubleSide(true);
+                    var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
+                    materialText.WithChannelImage(KnownChannel.BaseColor, image);
+                    var prim = meshBuilder.UsePrimitive(materialText);
+                    prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
                 }
             }
         }
