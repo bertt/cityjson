@@ -67,33 +67,37 @@ public static class GltfCreator
     private static List<Triangle> GetTriangles(CityObject? cityObject, List<Vertex> allVertices)
     {
         var result = new List<Triangle>();
-        var geometries = cityObject!.Geometry;
 
-        foreach (var geometry in geometries)
+        if(cityObject.Geometry != null)
         {
-            if (geometry is CompositeSolidGeometry compositeSolidGeometry)
+            var geometries = cityObject!.Geometry;
+
+            foreach (var geometry in geometries)
             {
-                var csTriangles = GetTriangles(compositeSolidGeometry, allVertices);
-                result.AddRange(csTriangles);
-            }
-            else if (geometry is SolidGeometry solidGeometry)
-            {
-                var triangles = GetTriangles(solidGeometry, allVertices);
-                result.AddRange(triangles);
-            }
-            else if (geometry is MultiSolidGeometry multiSolidGeometry)
-            {
-                var csTriangles = GetTriangles(multiSolidGeometry, allVertices);
-                result.AddRange(csTriangles);
-            }
-            else if (geometry is MultiSurfaceGeometry multiSurfaceGeometry)
-            {
-                var csTriangles = GetTriangles(multiSurfaceGeometry, allVertices);
-                result.AddRange(csTriangles);
-            }
-            else
-            {
-                throw new NotImplementedException($"Geometry type {geometry.GetType()} is not implemented.");
+                if (geometry is CompositeSolidGeometry compositeSolidGeometry)
+                {
+                    var csTriangles = GetTriangles(compositeSolidGeometry, allVertices);
+                    result.AddRange(csTriangles);
+                }
+                else if (geometry is SolidGeometry solidGeometry)
+                {
+                    var triangles = GetTriangles(solidGeometry, allVertices);
+                    result.AddRange(triangles);
+                }
+                else if (geometry is MultiSolidGeometry multiSolidGeometry)
+                {
+                    var csTriangles = GetTriangles(multiSolidGeometry, allVertices);
+                    result.AddRange(csTriangles);
+                }
+                else if (geometry is MultiSurfaceGeometry multiSurfaceGeometry)
+                {
+                    var csTriangles = GetTriangles(multiSurfaceGeometry, allVertices);
+                    result.AddRange(csTriangles);
+                }
+                else
+                {
+                    throw new NotImplementedException($"Geometry type {geometry.GetType()} is not implemented.");
+                }
             }
         }
         return result;
