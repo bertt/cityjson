@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using CityJSON;
+﻿using CityJSON;
 using cj2glb;
 using Newtonsoft.Json;
 using System.CommandLine;
@@ -22,7 +21,7 @@ await rootCommand.InvokeAsync(args);
 
 async Task RunAsync(string inputFile, string outputFile, string? id)
 {
-    Console.WriteLine("cj2glb 0.1");
+    Console.WriteLine("cj2glb");
     Console.WriteLine("Input file: " + inputFile);
     Console.WriteLine("Output file: " + outputFile);
 
@@ -36,7 +35,10 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
 
     // check if there are textures
     var hasTextures = cityjsonDocument.Appearance != null && cityjsonDocument.Appearance.Textures != null && cityjsonDocument.Appearance.Textures.Count > 0;
-    var texturesBaseDirectory = Path.GetDirectoryName(inputFile);
+    
+    var fullInputPath = Path.GetFullPath(inputFile);
+    var texturesBaseDirectory = Path.GetDirectoryName(fullInputPath);
+
     var bytes = hasTextures?
         TexturedGltfCreator.ToGltf(cityjsonDocument, texturesBaseDirectory, id) :
         GltfCreator.ToGltf(cityjsonDocument, id);
