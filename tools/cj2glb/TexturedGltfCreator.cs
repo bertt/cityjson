@@ -135,6 +135,27 @@ public class TexturedGltfCreator
         }
     }
 
+    // todo refactor, use MemoryImageCache
+    private static PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexTexture1, VertexEmpty> GetPrimitive(IReadOnlyCollection<PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexTexture1, VertexEmpty>> primitives, string image)
+    {
+        foreach (var primitive in primitives)
+        {
+            var material = primitive.Material;
+            var channel = material.GetChannel(KnownChannel.BaseColor);
+            if (channel != null)
+            {
+                var primaryImage = channel.Texture.PrimaryImage;
+                var path = primaryImage.Content.SourcePath;
+                var image1 = Path.GetFileName(path);
+                if (image.Contains(image1))
+                {
+                    return primitive;
+                }
+            }
+        }
+        return null;
+    }
+
     private static void HandleTextures(MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][] bnd, int?[][] texture1)
     {
         for (var j = 0; j < bnd.Count(); j++)
@@ -162,6 +183,18 @@ public class TexturedGltfCreator
                 var interiorRings = new List<int>();
                 var indices = Tesselator.Tesselate(vertices, interiorRings);
 
+                var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
+
+                var primitives = meshBuilder.Primitives;
+                var prim = GetPrimitive(primitives, appearance.Textures[imageId].Image);
+
+                if (prim ==null)
+                {
+                    var material = new MaterialBuilder().WithDoubleSide(true);
+                    material.WithChannelImage(KnownChannel.BaseColor, image);
+                    prim = meshBuilder.UsePrimitive(material);
+                }
+
                 for (var l = 0; l < indices.Count; l += 3)
                 {
                     var index0 = indices[l];
@@ -181,10 +214,6 @@ public class TexturedGltfCreator
                     t1 = new Vector2(t1.X, 1 - t1.Y);
                     t2 = new Vector2(t2.X, 1 - t2.Y);
 
-                    var materialText = new MaterialBuilder().WithDoubleSide(true);
-                    var image = texturesBaseDirectory + Path.DirectorySeparatorChar + appearance.Textures[imageId].Image;
-                    materialText.WithChannelImage(KnownChannel.BaseColor, image);
-                    var prim = meshBuilder.UsePrimitive(materialText);
                     prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
                 }
             }
