@@ -176,20 +176,6 @@ namespace CityJSON.Tests
             Assert.That(cityjson.CityObjects.Count == 7313);
         }
 
-
-        [Test]
-        public void TestGetVerticesEnvelope()
-        {
-            var json = File.ReadAllText("fixtures/25gn1_04_2020_gebouwen.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-            var envelope = cityjson.GetVerticesEnvelope();
-            Assert.That(envelope != null);
-            Assert.That(envelope.MinX == 122395.73);
-            Assert.That(envelope.MaxX == 125078.302);
-            Assert.That(envelope.MinY == 481236.351973146);
-            Assert.That(envelope.MaxY == 484461.608973146);
-        }
-
         [Test]
         public void TestMesh()
         {

@@ -70,9 +70,11 @@ Result: fzk_haus.glb
 
 - Appearance support: Textures, Vertices-Texture; 
 
+- Metadata support.
+
 ## Limitations
 
-- No support for metadata, semantics, extensions, materials;
+- No support for extensions, materials;
 
 - No support for writing CityJSON files;
 
