@@ -81,7 +81,7 @@ public class Tests
     }
 
     [TestCase("testfixtures/3-20-DELFSHAVEN.city.json")]
-    public void DElfshavenToGltfNewTests(string filePath)
+    public void DelfshavenToGltfNewTests(string filePath)
     {
         var json = File.ReadAllText(filePath);
         var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);

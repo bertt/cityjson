@@ -21,6 +21,9 @@
     <None Update="samples\cube.city.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="samples\delfshaven\3-20-DELFSHAVEN.city.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
