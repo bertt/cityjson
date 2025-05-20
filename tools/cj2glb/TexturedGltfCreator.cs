@@ -201,9 +201,9 @@ public class TexturedGltfCreator
                     var index1 = indices[l + 1];
                     var index2 = indices[l + 2];
 
-                    var v0 = vertices[index0].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                    var v1 = vertices[index1].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
-                    var v2 = vertices[index2].ToVector3() * transform.ScaleVector3() + transform.TranslateVector3();
+                    var v0 = vertices[index0].ToVector3() * transform.ScaleVector3();
+                    var v1 = vertices[index1].ToVector3() * transform.ScaleVector3();
+                    var v2 = vertices[index2].ToVector3() * transform.ScaleVector3();
 
                     var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
                     var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);

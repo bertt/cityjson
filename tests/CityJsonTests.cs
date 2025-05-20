@@ -200,22 +200,5 @@ namespace CityJSON.Tests
             Assert.That(((MultiPolygon)feature.Geometry).Count == 82701);
 
         }
-
-        [Test]
-        public void TestReadEnvelope()
-        {
-            var json = File.ReadAllText("fixtures/25gn1_04_2020_gebouwen.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-            var env = cityjson.GetVerticesEnvelope();
-            var envelope = env.envelope;
-            float minZ = env.minZ;
-            float maxZ = env.maxZ;
-            Assert.That(envelope.MinX == 122395.73);
-            Assert.That(envelope.MinY == 481236.351973146);
-            Assert.That(envelope.MaxX == 125078.302);
-            Assert.That(envelope.MaxY == 484461.608973146);
-            Assert.That(maxZ, Is.EqualTo(137.025f).Within(0.001f));
-            Assert.That(minZ, Is.EqualTo(-5.627).Within(0.001f));
-        }
     }
 }

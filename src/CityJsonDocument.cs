@@ -44,5 +44,6 @@ namespace CityJSON
             }
             return (envelope, minZ, maxZ);
         }
+
     }
 }

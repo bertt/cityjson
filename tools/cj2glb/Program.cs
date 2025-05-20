@@ -2,7 +2,6 @@
 using cj2glb;
 using Newtonsoft.Json;
 using System.CommandLine;
-using System.Numerics;
 
 var inputFile = new Argument<string>("input CityJSON file");
 var outputFile = new Argument<string>("Output glTF 2.0 file");
@@ -35,30 +34,40 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
     var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
 
     var geographicalExtent = cityjsonDocument.Metadata.GeographicalExtent;
-
-    if(geographicalExtent == null)
-    {
-        var env = cityjsonDocument.GetVerticesEnvelope();  
-        var envelope = env.envelope;
-        var minZ = env.minZ;
-        var maxZ = env.maxZ;
-        geographicalExtent = [(float)envelope.MinX, (float)envelope.MinY, minZ, (float)envelope.MaxX, (float)envelope.MaxY, maxZ];
-
-    }
-
     Console.WriteLine("CRS:" + cityjsonDocument.Metadata.ReferenceSystem);  
 
-    var geographicalExtentString = string.Join(", ", geographicalExtent);
-    Console.WriteLine($"Geographical Extent: {geographicalExtentString}");
-    var center_x = geographicalExtent[0] + (geographicalExtent[3] - geographicalExtent[0]) / 2;
-    var center_y = geographicalExtent[1] + (geographicalExtent[4] - geographicalExtent[1]) / 2;
-    var center_z = geographicalExtent[2] + (geographicalExtent[5] - geographicalExtent[2]) / 2;
+    if(geographicalExtent != null)
+    {
+        var geographicalExtentString = string.Join(", ", geographicalExtent);
+        Console.WriteLine($"Geographical Extent: {geographicalExtentString}");
+    }
+    var translation = cityjsonDocument.Transform.Translate;
+    Console.WriteLine("Translation: " + string.Join(", ", translation));    
 
-    var center = new Vector3((float)center_x, (float)center_y, (float)center_z);
-    Console.WriteLine("Center: " + center.ToString("F4"));
-    var centerWgs84 = CoordinateTransformer.TransformToWGS84(center[0], center[1], center[2], cityjsonDocument.Metadata.ReferenceSystem);
-    Console.WriteLine("Center WGS84: " + centerWgs84);
-    // check if there are textures
+       
+    var translationWgs84 = CoordinateTransformer.TransformToWGS84(translation[0], translation[1], translation[2], cityjsonDocument.Metadata.ReferenceSystem);
+    Console.WriteLine("Translation in WGS84: " + translationWgs84);
+
+    var ext = cityjsonDocument.GetVerticesEnvelope();
+    var env = ext.envelope;
+    var minExtWgs94 = CoordinateTransformer.TransformToWGS84(env.MinX, env.MinY, ext.minZ, cityjsonDocument.Metadata.ReferenceSystem);
+    var maxExtWgs94 = CoordinateTransformer.TransformToWGS84(env.MaxX, env.MaxY, ext.maxZ, cityjsonDocument.Metadata.ReferenceSystem);
+
+    var region = new float[]
+    {
+        ToRadians((float)minExtWgs94.X),
+        ToRadians((float) minExtWgs94.Y),
+        ToRadians((float) maxExtWgs94.X),
+        ToRadians((float) maxExtWgs94.Y),
+        ext.minZ,
+        ext.maxZ
+    };
+    Console.WriteLine("Region: " + string.Join(", ", region));
+
+    var translationEcef = SpatialConvertor.GeodeticToEcef(translationWgs84[0], translationWgs84[1], ext.minZ);
+    Console.WriteLine("Translation in ECEF: " + translationEcef);
+    var matrix = SpatialConvertor.EcefToEnu(translationEcef);
+
     var hasTextures = cityjsonDocument.Appearance != null && cityjsonDocument.Appearance.Textures != null && cityjsonDocument.Appearance.Textures.Count > 0;
     
     var fullInputPath = Path.GetFullPath(inputFile);
@@ -71,6 +80,45 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
 
     Console.WriteLine("GLB file created: " + outputFile);
     Console.WriteLine("GLB file size: " + new FileInfo(outputFile).Length + " bytes");
+
+    var tilesetJson = new Rootobject();
+    var asset = new Asset();
+    asset.Version = "1.0";
+    tilesetJson.Asset = asset;
+
+    var transform = new float[]
+    {
+        matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+        matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+        matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+        matrix.M41, matrix.M42, matrix.M43, matrix.M44
+    };
+
+    var root = new Root();
+    var boundingVolume = new Boundingvolume();  
+    boundingVolume.Region = region;
+    root.BoundingVolume = boundingVolume;
+
+    root.Transform = transform;
+    var content = new Content();
+    content.uri = Path.GetFileName(outputFile);
+    root.Content = content;
+    tilesetJson.Root = root;
+
+    var settings = new JsonSerializerSettings
+        {
+        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+        Formatting = Formatting.Indented
+    };
+    var tilesetJsonString = JsonConvert.SerializeObject(tilesetJson, settings);
+
+    var path = Path.GetDirectoryName(outputFile);
+    File.WriteAllText(path + Path.DirectorySeparatorChar + "tileset.json", tilesetJsonString);
+
     Console.WriteLine("Program finished.");
 }
 
+static float ToRadians(float degrees)
+{
+    return (float)(degrees * Math.PI / 180.0);
+}

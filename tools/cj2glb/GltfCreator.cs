@@ -45,9 +45,9 @@ public static class GltfCreator
 
         foreach (var triangle in allTriangles)
         {
-            var vp0 = new VertexPosition(triangle.A * scale + translate);
-            var vp1 = new VertexPosition(triangle.B * scale + translate);
-            var vp2 = new VertexPosition(triangle.C * scale + translate);
+            var vp0 = new VertexPosition(triangle.A * scale);
+            var vp1 = new VertexPosition(triangle.B * scale);
+            var vp2 = new VertexPosition(triangle.C * scale);
 
             prim.AddTriangle(vp0, vp1, vp2);
         }
