@@ -36,6 +36,16 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
 
     var geographicalExtent = cityjsonDocument.Metadata.GeographicalExtent;
 
+    if(geographicalExtent == null)
+    {
+        var env = cityjsonDocument.GetVerticesEnvelope();  
+        var envelope = env.envelope;
+        var minZ = env.minZ;
+        var maxZ = env.maxZ;
+        geographicalExtent = [(float)envelope.MinX, (float)envelope.MinY, minZ, (float)envelope.MaxX, (float)envelope.MaxY, maxZ];
+
+    }
+
     Console.WriteLine("CRS:" + cityjsonDocument.Metadata.ReferenceSystem);  
 
     if (geographicalExtent != null)
