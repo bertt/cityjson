@@ -48,20 +48,16 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
 
     Console.WriteLine("CRS:" + cityjsonDocument.Metadata.ReferenceSystem);  
 
-    if (geographicalExtent != null)
-    {
+    var geographicalExtentString = string.Join(", ", geographicalExtent);
+    Console.WriteLine($"Geographical Extent: {geographicalExtentString}");
+    var center_x = geographicalExtent[0] + (geographicalExtent[3] - geographicalExtent[0]) / 2;
+    var center_y = geographicalExtent[1] + (geographicalExtent[4] - geographicalExtent[1]) / 2;
+    var center_z = geographicalExtent[2] + (geographicalExtent[5] - geographicalExtent[2]) / 2;
 
-        var geographicalExtentString = string.Join(", ", geographicalExtent);
-        Console.WriteLine($"Geographical Extent: {geographicalExtentString}");
-        var center_x = geographicalExtent[0] + (geographicalExtent[3] - geographicalExtent[0]) / 2;
-        var center_y = geographicalExtent[1] + (geographicalExtent[4] - geographicalExtent[1]) / 2;
-        var center_z = geographicalExtent[2] + (geographicalExtent[5] - geographicalExtent[2]) / 2;
-
-        var center = new Vector3((float)center_x, (float)center_y, (float)center_z);
-        Console.WriteLine("Center: " + center.ToString("F4"));
-    }
-
-
+    var center = new Vector3((float)center_x, (float)center_y, (float)center_z);
+    Console.WriteLine("Center: " + center.ToString("F4"));
+    var centerWgs84 = CoordinateTransformer.TransformToWGS84(center[0], center[1], center[2], cityjsonDocument.Metadata.ReferenceSystem);
+    Console.WriteLine("Center WGS84: " + centerWgs84);
     // check if there are textures
     var hasTextures = cityjsonDocument.Appearance != null && cityjsonDocument.Appearance.Textures != null && cityjsonDocument.Appearance.Textures.Count > 0;
     
