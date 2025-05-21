@@ -66,9 +66,11 @@ Result: fzk_haus.glb
 
 - Geometry type support: Solid, CompositeSurface, MultiSurface, MultiSolid, CompositeSolid;
 
-- Support for interior rings;
+- Interior rings;
 
 - Appearance support: Textures, Vertices-Texture; 
+
+- CityObject - Address 
 
 - Metadata support.
 

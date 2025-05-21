@@ -9,8 +9,6 @@ using NUnit.Framework;
 
 namespace CityJSON.Tests
 {
-
-
     public class UnitTest1
     {
         [Test]
@@ -198,7 +196,22 @@ namespace CityJSON.Tests
 
             var wkt = wktWriter.Write(feature.Geometry);
             Assert.That(((MultiPolygon)feature.Geometry).Count == 82701);
+        }
 
+        [Test]
+        public void TestAdressProperty()
+        {
+            var json = File.ReadAllText("fixtures/euromast.json");
+            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            // get second city object
+            var cityObjects = cityjson.CityObjects;
+            Assert.That(cityObjects.Count == 3);
+            var bagObject = cityObjects["BAG_0599100000661084"];
+            var address = bagObject.Address;
+            Assert.That(address != null);
+            string postalCode = address["PostalCode"]?.ToString();
+            Assert.That(postalCode != null);
+            Assert.That(postalCode == "3016GM");
         }
     }
 }
