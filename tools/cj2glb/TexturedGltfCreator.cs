@@ -1,9 +1,9 @@
 ﻿using CityJSON;
-using SharpGLTF.Geometry.VertexTypes;
+using CityJSON.Geometry;
 using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
 using System.Numerics;
-using CityJSON.Geometry;
 
 namespace cj2glb;
 public class TexturedGltfCreator
@@ -15,7 +15,9 @@ public class TexturedGltfCreator
         var transform = cityJsonDocument.Transform;
 
         var scene = new SharpGLTF.Scenes.SceneBuilder();
-        var meshBuilder = new MeshBuilder<VertexPosition, VertexTexture1>("mesh");
+        // var meshBuilder = new MeshBuilder<VertexPosition, VertexTexture1>("mesh");
+        var meshBuilder = new MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty>("mesh");
+
 
         var cityObjects = cityJsonDocument.CityObjects;
 
@@ -43,7 +45,7 @@ public class TexturedGltfCreator
         return bytes;
     }
 
-    public static void ProcessTexturedCityObject(CityObject cityObject, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory = "")
+    public static void ProcessTexturedCityObject(CityObject cityObject, MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory = "")
     {
         var geometries = cityObject.Geometry;
 
@@ -76,7 +78,7 @@ public class TexturedGltfCreator
         }
     }
 
-    private static void HandleCompositeSurface(CompositeSurfaceGeometry compositeSurfaceGeometry, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
+    private static void HandleCompositeSurface(CompositeSurfaceGeometry compositeSurfaceGeometry, MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
     {
         var boundaries = compositeSurfaceGeometry.Boundaries;
 
@@ -94,7 +96,7 @@ public class TexturedGltfCreator
         }
     }
 
-    private static void HandleSolid(SolidGeometry solidGeometry, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
+    private static void HandleSolid(SolidGeometry solidGeometry, MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
     {
         var boundaries = solidGeometry.Boundaries;
 
@@ -112,7 +114,7 @@ public class TexturedGltfCreator
         }
     }
 
-    private static void HandleMultiSurface(MultiSurfaceGeometry multiSurfaceGeometry, MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
+    private static void HandleMultiSurface(MultiSurfaceGeometry multiSurfaceGeometry, MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory)
     {
         var boundaries = multiSurfaceGeometry.Boundaries;
         if(multiSurfaceGeometry.Texture != null)
@@ -124,7 +126,7 @@ public class TexturedGltfCreator
         }
     }
 
-    private static void HandleTextures(MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][][] boundaries, int?[][][] firstTexture)
+    private static void HandleTextures(MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][][] boundaries, int?[][][] firstTexture)
     {
         for (var i = 0; i < boundaries.Count(); i++)
         {
@@ -136,7 +138,7 @@ public class TexturedGltfCreator
     }
 
     // todo refactor, use MemoryImageCache
-    private static PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexTexture1, VertexEmpty> GetPrimitive(IReadOnlyCollection<PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexTexture1, VertexEmpty>> primitives, string image)
+    private static PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexWithFeatureId1, VertexEmpty> GetPrimitive(IReadOnlyCollection<PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexWithFeatureId1, VertexEmpty>> primitives, string image)
     {
         foreach (var primitive in primitives)
         {
@@ -156,7 +158,7 @@ public class TexturedGltfCreator
         return null;
     }
 
-    private static void HandleTextures(MeshBuilder<VertexPosition, VertexTexture1> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][] bnd, int?[][] texture1)
+    private static void HandleTextures(MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> meshBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, string texturesBaseDirectory, int[][] bnd, int?[][] texture1)
     {
         for (var j = 0; j < bnd.Count(); j++)
         {
@@ -214,9 +216,23 @@ public class TexturedGltfCreator
                     t1 = new Vector2(t1.X, 1 - t1.Y);
                     t2 = new Vector2(t2.X, 1 - t2.Y);
 
-                    prim.AddTriangle((v0, t0), (v1, t1), (v2, t2));
+                    var featureId = 666;
+                    var vt0 = GetVertexWithFeatureId(v0, featureId, t0);
+                    var vt1 = GetVertexWithFeatureId(v1, featureId, t1);
+                    var vt2 = GetVertexWithFeatureId(v2, featureId, t2);
+
+                    prim.AddTriangle(vt0, vt1, vt2);
                 }
             }
         }
+    }
+
+
+    private static VertexBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty> GetVertexWithFeatureId(Vector3 position, int featureid, Vector2 texCoord)
+    {
+        var vp0 = new VertexPosition(position);
+        var v = new VertexWithFeatureId1(featureid, texCoord);
+        var vb0 = new VertexBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty>(vp0, v);
+        return vb0;
     }
 }
