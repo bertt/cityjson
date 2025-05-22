@@ -56,8 +56,15 @@ public class TexturedGltfCreator
             var names = new List<string>(); 
             foreach (var cityObject in cityObjects)
             {
-                var attribute = Convert.ToString(cityObject.Value.Attributes.First().Value);
-                names.Add(attribute);
+                if(cityObject.Value.Attributes != null)
+                {
+                    var attribute = Convert.ToString(cityObject.Value.Attributes.First().Value);
+                    names.Add(attribute);
+                }
+                else
+                {
+                    names.Add("");
+                }
             }
 
             propertyTable
