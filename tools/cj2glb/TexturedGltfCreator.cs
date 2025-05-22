@@ -10,6 +10,19 @@ using System.Numerics;
 namespace cj2glb;
 public class TexturedGltfCreator
 {
+
+    private static List<string> GetProperties(List<CityObject> cityObjects)
+    {
+        var properties = new List<string>();
+        foreach (var cityObject in cityObjects)
+        {
+            if (cityObject.Attributes != null)
+            {
+                properties.AddRange(cityObject.Attributes.Select(x => x.Key).ToList());
+            }
+        }
+        return properties.Distinct().ToList();
+    }
     public static byte[] ToGltf(CityJsonDocument cityJsonDocument, string texturesBaseDirectory = "", string id = null)
     {
         var allVertices = cityJsonDocument.Vertices;
@@ -46,30 +59,44 @@ public class TexturedGltfCreator
 
             var schemaClass = schema.UseClassMetadata("triangles");
 
-            var nameProperty = schemaClass
-                .UseProperty("measuredHeight")
-                .WithStringType();
+            var properties = GetProperties(cityObjects.Values.ToList());
 
+            foreach(var property in properties)
+            {
+                schemaClass.UseProperty(property).WithStringType();
+            }
+            
             var propertyTable = schemaClass
                 .AddPropertyTable(cityObjects.Count);
 
-            var names = new List<string>(); 
+            var dict = new Dictionary<string, List<string>>();
+            foreach (var property in properties)
+            {
+                dict.Add(property, new List<string>());
+            }
+
             foreach (var cityObject in cityObjects)
             {
-                if(cityObject.Value.Attributes != null)
+                foreach (var property in properties)
                 {
-                    var attribute = Convert.ToString(cityObject.Value.Attributes.First().Value);
-                    names.Add(attribute);
-                }
-                else
-                {
-                    names.Add("");
+                    if (cityObject.Value.Attributes!=null && cityObject.Value.Attributes.ContainsKey(property))
+                    {
+                        var attribute = Convert.ToString(cityObject.Value.Attributes[property]);
+                        dict[property].Add(attribute);
+                    }
+                    else
+                    {
+                        dict[property].Add("");
+                    }
                 }
             }
 
-            propertyTable
-                .UseProperty(nameProperty)
-                .SetValues(names.ToArray());
+            foreach (var property in properties)
+            {
+                var nameProperty = schemaClass.UseProperty(property).WithStringType();
+                var values = dict[property].ToArray();
+                propertyTable.UseProperty(nameProperty).SetValues(values);
+            }
 
             foreach (var primitive in model.LogicalMeshes[0].Primitives)
             {
