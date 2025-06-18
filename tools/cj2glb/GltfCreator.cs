@@ -1,9 +1,9 @@
 ﻿using CityJSON;
-using SharpGLTF.Geometry.VertexTypes;
+using CityJSON.Geometry;
 using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
 using System.Numerics;
-using CityJSON.Geometry;
 
 namespace cj2glb;
 public static class GltfCreator
@@ -11,7 +11,8 @@ public static class GltfCreator
     public static byte[] ToGltf(CityJsonDocument cityJsonDocument, string id = null)
     {
         var scene = new SharpGLTF.Scenes.SceneBuilder();
-        var meshBuilder = new MeshBuilder<VertexPosition>("mesh");
+        var meshBuilder = new MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty>("mesh");
+
         var material1 = new MaterialBuilder()
            .WithDoubleSide(true)
            .WithMetallicRoughnessShader()
@@ -33,27 +34,17 @@ public static class GltfCreator
             cityObjects = cityObjects.Where(x => x.Key == id).ToDictionary(x => x.Key, x => x.Value);
         }
 
+        var featureId = 0;
         foreach (var cityObject in cityObjects)
         {
             var co = cityObject.Value;
-            var triangles = GetTriangles(co, allVertices);
-            allTriangles.AddRange(triangles);
-        }
-
-        var translate = transform.TranslateVector3();
-        var scale = transform.ScaleVector3();
-
-        foreach (var triangle in allTriangles)
-        {
-            var vp0 = new VertexPosition(triangle.A * scale);
-            var vp1 = new VertexPosition(triangle.B * scale);
-            var vp2 = new VertexPosition(triangle.C * scale);
-
-            prim.AddTriangle(vp0, vp1, vp2);
+            ProcessCityObject(co, prim, allVertices, appearance, transform, featureId);
+            featureId++;
         }
 
         scene.AddRigidMesh(meshBuilder, Matrix4x4.Identity);
         var model = scene.ToGltf2();
+        AttributesHandler.AddAttributes(cityObjects, model);
         var localTransform = new Matrix4x4(
             1, 0, 0, 0,
             0, 0, -1, 0,
@@ -62,6 +53,31 @@ public static class GltfCreator
         model.ApplyBasisTransform(localTransform);
         var bytes = model.WriteGLB().Array;
         return bytes;
+    }
+
+    private static void ProcessCityObject(CityObject co, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexWithFeatureId1, VertexEmpty> primitiveBuilder, List<Vertex> allVertices, Appearance appearance, Transform transform, int featureId)
+    {
+        var triangles = GetTriangles(co, allVertices);
+
+        var translate = transform.TranslateVector3();
+        var scale = transform.ScaleVector3();
+
+        foreach (var triangle in triangles)
+        {
+            var vp0 = GetVertexWithFeatureId(triangle.A * scale, featureId);
+            var vp1 = GetVertexWithFeatureId(triangle.B * scale, featureId);
+            var vp2 = GetVertexWithFeatureId(triangle.C * scale, featureId);
+
+            primitiveBuilder.AddTriangle(vp0, vp1, vp2);
+        }
+    }
+
+    private static VertexBuilder<VertexPosition, VertexWithFeatureId, VertexEmpty> GetVertexWithFeatureId(Vector3 position, int featureid)
+    {
+        var vp0 = new VertexPosition(position);
+        var v = new VertexWithFeatureId(featureid);
+        var vb0 = new VertexBuilder<VertexPosition, VertexWithFeatureId, VertexEmpty>(vp0, v);
+        return vb0;
     }
 
     private static List<Triangle> GetTriangles(CityObject? cityObject, List<Vertex> allVertices)

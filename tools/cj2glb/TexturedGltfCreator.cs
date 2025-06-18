@@ -29,7 +29,6 @@ public class TexturedGltfCreator
         var appearance = cityJsonDocument.Appearance;
         var transform = cityJsonDocument.Transform;
 
-        Tiles3DExtensions.RegisterExtensions();
         var scene = new SharpGLTF.Scenes.SceneBuilder();
         var meshBuilder = new MeshBuilder<VertexPosition, VertexWithFeatureId1, VertexEmpty>("mesh");
 
@@ -51,59 +50,7 @@ public class TexturedGltfCreator
         scene.AddRigidMesh(meshBuilder, Matrix4x4.Identity);
         var model = scene.ToGltf2();
 
-        
-        if(cityObjects.First().Value.Attributes != null)
-        {
-            var rootMetadata = model.UseStructuralMetadata();
-            var schema = rootMetadata.UseEmbeddedSchema("schema_001");
-
-            var schemaClass = schema.UseClassMetadata("triangles");
-
-            var properties = GetProperties(cityObjects.Values.ToList());
-
-            foreach(var property in properties)
-            {
-                schemaClass.UseProperty(property).WithStringType();
-            }
-            
-            var propertyTable = schemaClass
-                .AddPropertyTable(cityObjects.Count);
-
-            var dict = new Dictionary<string, List<string>>();
-            foreach (var property in properties)
-            {
-                dict.Add(property, new List<string>());
-            }
-
-            foreach (var cityObject in cityObjects)
-            {
-                foreach (var property in properties)
-                {
-                    if (cityObject.Value.Attributes!=null && cityObject.Value.Attributes.ContainsKey(property))
-                    {
-                        var attribute = Convert.ToString(cityObject.Value.Attributes[property]);
-                        dict[property].Add(attribute);
-                    }
-                    else
-                    {
-                        dict[property].Add("");
-                    }
-                }
-            }
-
-            foreach (var property in properties)
-            {
-                var nameProperty = schemaClass.UseProperty(property).WithStringType();
-                var values = dict[property].ToArray();
-                propertyTable.UseProperty(nameProperty).SetValues(values);
-            }
-
-            foreach (var primitive in model.LogicalMeshes[0].Primitives)
-            {
-                var featureIdAttribute = new FeatureIDBuilder(cityObjects.Count, 0, propertyTable);
-                primitive.AddMeshFeatureIds(featureIdAttribute);
-            }
-        }
+        AttributesHandler.AddAttributes(cityObjects, model);
 
         var localTransform = new Matrix4x4(
                1, 0, 0, 0,

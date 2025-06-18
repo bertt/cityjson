@@ -33,6 +33,19 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
     var json = File.ReadAllText(inputFile);
     var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
 
+    // Set something sensible if not set    
+    if (cityjsonDocument.Metadata.GeographicalExtent==null)
+    {
+        Console.WriteLine("Geographical extent not set, setting default values.");
+        cityjsonDocument.Metadata.GeographicalExtent = [90409.32f, 435440.44f, 0.0f, 91453.879f, 436089.946f, 41.158f];
+    }
+    if (cityjsonDocument.Metadata.ReferenceSystem == null)
+    {
+        Console.WriteLine("Reference system not set, setting default value urn:ogc:def:crs:EPSG::28992.");
+        cityjsonDocument.Metadata.ReferenceSystem = "urn:ogc:def:crs:EPSG::28992";
+    }
+
+
     var geographicalExtent = cityjsonDocument.Metadata.GeographicalExtent;
     Console.WriteLine("CRS:" + cityjsonDocument.Metadata.ReferenceSystem);  
 
