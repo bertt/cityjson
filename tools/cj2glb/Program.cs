@@ -77,6 +77,8 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
     };
     Console.WriteLine("Region: " + string.Join(", ", region));
 
+    var currentDirectory = Directory.GetCurrentDirectory();
+
     var translationEcef = SpatialConvertor.GeodeticToEcef(translationWgs84[0], translationWgs84[1], ext.minZ);
     Console.WriteLine("Translation in ECEF: " + translationEcef);
     var matrix = SpatialConvertor.EcefToEnu(translationEcef);
@@ -126,7 +128,14 @@ async Task RunAsync(string inputFile, string outputFile, string? id)
     var tilesetJsonString = JsonConvert.SerializeObject(tilesetJson, settings);
 
     var path = Path.GetDirectoryName(outputFile);
-    File.WriteAllText(path + Path.DirectorySeparatorChar + "tileset.json", tilesetJsonString);
+    if(path== "")
+    {
+        File.WriteAllText("tileset.json", tilesetJsonString);
+    }
+    else
+    {
+        File.WriteAllText(path + Path.DirectorySeparatorChar + "tileset.json", tilesetJsonString);
+    }
 
     Console.WriteLine("Program finished.");
 }
