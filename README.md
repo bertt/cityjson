@@ -39,6 +39,9 @@ var feature = cityObject.ToFeature(vertices, transform);
 
 - cj2glb: from CityJSON to GLB
 
+Created glTF file contains 3D Tiles extensions EXT_Mesh_features + EXT_Structural_Metadata for storing attribute information. Also a tileset.json
+file is created with a reference to the glTF. When there is no projection info in the input file, some default projection is used.
+
 Sample usage cj2glb:
 
 - Download CityGML from https://www.citygmlwiki.org/index.php?title=FZK_Haus,_CityGML_3.0,_LoD2,_No_Storeys,_Boundary_Surfaces
