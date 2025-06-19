@@ -75,7 +75,9 @@ Result: fzk_haus.glb
 
 - CityObject - Address 
 
-- Metadata support.
+- Metadata support (EXT_Mesh_Features + EXT+Structural_Metadata)
+
+- Creates tileset.json for use in 3D Tiles
 
 ## Limitations
 
