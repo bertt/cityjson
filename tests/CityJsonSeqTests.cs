@@ -66,7 +66,7 @@ public class CityJsonSeqTests
         try
         {
             // Write to a temporary file
-            CityJsonSeqReader.WriteCityJsonSeq(originalDocuments, tempFile);
+            CityJsonSeqWriter.WriteCityJsonSeq(originalDocuments, tempFile);
 
             // Read it back
             var roundTrippedDocuments = CityJsonSeqReader.ReadCityJsonSeq(tempFile);

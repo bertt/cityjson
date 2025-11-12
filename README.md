@@ -39,7 +39,7 @@ var cityJsondocuments = CityJsonSeqReader.ReadCityJsonSeq("./fixtures/cityjsonse
 Writing CityJSON 2.0 Seq file:
 
 ```
-CityJsonSeqReader.WriteCityJsonSeq(cityJsondocuments, "output.city.jsonl");
+CityJsonSeqWriter.WriteCityJsonSeq(cityJsondocuments, "output.city.jsonl");
 ```
 
 Convert CityJSONDocument to NetTopologySuite:
