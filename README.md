@@ -1,6 +1,6 @@
 # CityJSON
 
-.NET 6.0 Library for reading CityJSON files (https://www.cityjson.org/)
+.NET 6.0 Library for reading and writing CityJSON files (https://www.cityjson.org/)
 
 NuGet package: https://www.nuget.org/packages/bertt.CityJSON/
 
@@ -15,6 +15,19 @@ Reading CityJSON file:
 ```
 var json = File.ReadAllText("fixtures/minimal.city.json");
 var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+```
+
+Writing CityJSON file:
+
+```
+var json = CityJsonWriter.Write(cityjsonDocument);
+File.WriteAllText("output.city.json", json);
+```
+
+Or use the convenience method:
+
+```
+CityJsonWriter.WriteToFile(cityjsonDocument, "output.city.json");
 ```
 
 Sample reading CityJSON 2.0 Seq file and converting to NetTopologySuite:
@@ -79,13 +92,15 @@ Result: fzk_haus.glb
 
 - Creates tileset.json for use in 3D Tiles
 
+- Reading and writing CityJSON files
+
 ## Limitations
 
 - No support for extensions, materials;
 
-- No support for writing CityJSON files;
-
 ## History
+
+2025-11-12: release 2.3 - Adding writing support
 
 2025-05-06: release 2.2 - Adding textures support
 

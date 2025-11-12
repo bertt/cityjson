@@ -81,11 +81,95 @@ namespace CityJSON.Convertors
             return obj;
         }
 
-        public override bool CanWrite => false;
+        public override bool CanWrite => true;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var geometry = (Geometry.Geometry)value;
+            
+            writer.WriteStartObject();
+            
+            // Write type
+            writer.WritePropertyName("type");
+            writer.WriteValue(geometry.Type.ToString());
+            
+            // Write lod if present
+            if (!string.IsNullOrEmpty(geometry.Lod))
+            {
+                writer.WritePropertyName("lod");
+                writer.WriteValue(geometry.Lod);
+            }
+            
+            // Write boundaries based on type
+            writer.WritePropertyName("boundaries");
+            switch (geometry.Type)
+            {
+                case GeometryType.Solid:
+                    var solid = (SolidGeometry)geometry;
+                    serializer.Serialize(writer, solid.Boundaries);
+                    if (solid.Texture != null)
+                    {
+                        writer.WritePropertyName("texture");
+                        WriteTexture(writer, serializer, solid.Texture);
+                    }
+                    break;
+                    
+                case GeometryType.CompositeSurface:
+                    var compositeSurface = (CompositeSurfaceGeometry)geometry;
+                    serializer.Serialize(writer, compositeSurface.Boundaries);
+                    if (compositeSurface.Texture != null)
+                    {
+                        writer.WritePropertyName("texture");
+                        WriteTexture(writer, serializer, compositeSurface.Texture);
+                    }
+                    break;
+                    
+                case GeometryType.MultiSurface:
+                    var multiSurface = (MultiSurfaceGeometry)geometry;
+                    serializer.Serialize(writer, multiSurface.Boundaries);
+                    if (multiSurface.Texture != null)
+                    {
+                        writer.WritePropertyName("texture");
+                        WriteTexture(writer, serializer, multiSurface.Texture);
+                    }
+                    break;
+                    
+                case GeometryType.MultiSolid:
+                    var multiSolid = (MultiSolidGeometry)geometry;
+                    serializer.Serialize(writer, multiSolid.Boundaries);
+                    if (multiSolid.Texture != null)
+                    {
+                        writer.WritePropertyName("texture");
+                        WriteTexture(writer, serializer, multiSolid.Texture);
+                    }
+                    break;
+                    
+                case GeometryType.CompositeSolid:
+                    var compositeSolid = (CompositeSolidGeometry)geometry;
+                    serializer.Serialize(writer, compositeSolid.Boundaries);
+                    if (compositeSolid.Texture != null)
+                    {
+                        writer.WritePropertyName("texture");
+                        WriteTexture(writer, serializer, compositeSolid.Texture);
+                    }
+                    break;
+            }
+            
+            writer.WriteEndObject();
+        }
+        
+        private void WriteTexture<T>(JsonWriter writer, JsonSerializer serializer, Dictionary<string, T> texture)
+        {
+            writer.WriteStartObject();
+            foreach (var kvp in texture)
+            {
+                writer.WritePropertyName(kvp.Key);
+                writer.WriteStartObject();
+                writer.WritePropertyName("values");
+                serializer.Serialize(writer, kvp.Value);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndObject();
         }
 
 
