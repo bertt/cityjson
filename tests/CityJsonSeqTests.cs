@@ -1,7 +1,8 @@
-﻿using CityJSON.Extensions;
+using CityJSON.Extensions;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using NUnit.Framework;
+using System.IO;
 using System.Linq;
 
 namespace CityJSON.Tests;
@@ -50,5 +51,55 @@ public class CityJsonSeqTests
         var wktWriter = new WKTWriter();
         wktWriter.OutputOrdinates = Ordinates.XYZ;
         var wkt = wktWriter.Write(feature.Geometry);
+    }
+
+    [TestCase("fixtures/cityjsonseq/paris_tower.city.jsonl")]
+    [TestCase("fixtures/cityjsonseq/3dbag_b2.city.jsonl")]
+    [TestCase("fixtures/cityjsonseq/sisteron.city.jsonl")]
+    [TestCase("fixtures/cityjsonseq/montréal_b4.city.jsonl")]
+    public void RoundTripCityJsonSeq(string filePath)
+    {
+        // Read the original CityJSONSeq file
+        var originalDocuments = CityJsonSeqReader.ReadCityJsonSeq(filePath);
+
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            // Write to a temporary file
+            CityJsonSeqWriter.WriteCityJsonSeq(originalDocuments, tempFile);
+
+            // Read it back
+            var roundTrippedDocuments = CityJsonSeqReader.ReadCityJsonSeq(tempFile);
+
+            // Verify the number of documents matches
+            Assert.That(roundTrippedDocuments.Count, Is.EqualTo(originalDocuments.Count));
+
+            // Verify each document
+            for (int i = 0; i < originalDocuments.Count; i++)
+            {
+                var original = originalDocuments[i];
+                var roundTripped = roundTrippedDocuments[i];
+
+                Assert.That(roundTripped.Type, Is.EqualTo(original.Type));
+                Assert.That(roundTripped.Version, Is.EqualTo(original.Version));
+                
+                if (original.Transform != null)
+                {
+                    Assert.That(roundTripped.Transform, Is.Not.Null);
+                    Assert.That(roundTripped.Transform.Scale, Is.EqualTo(original.Transform.Scale));
+                    Assert.That(roundTripped.Transform.Translate, Is.EqualTo(original.Transform.Translate));
+                }
+
+                Assert.That(roundTripped.CityObjects.Count, Is.EqualTo(original.CityObjects.Count));
+                Assert.That(roundTripped.Vertices.Count, Is.EqualTo(original.Vertices.Count));
+            }
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
     }
 }
