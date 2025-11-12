@@ -2,24 +2,31 @@
 using cj2glb;
 using Newtonsoft.Json;
 using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 
-var inputFile = new Argument<string>("input CityJSON file");
-var outputFile = new Argument<string>("Output glTF 2.0 file");
-var idOption = new Option<string>(
-    name: "--id",
-    description: "Optional ID of the CityObject to convert"
-);
+var inputFileArg = new Argument<string>("input CityJSON file");
+var outputFileArg = new Argument<string>("Output glTF 2.0 file");
+var idOption = new Option<string>("--id");
+idOption.Description = "Optional ID of the CityObject to convert";
 
 var rootCommand = new RootCommand("CLI tool for converting from CityJSON to glTF 2.0 (GLB)")
 {
-    inputFile, outputFile,   idOption
+    inputFileArg, outputFileArg, idOption
 };
 
-rootCommand.SetHandler(RunAsync, inputFile, outputFile, idOption);
+rootCommand.SetAction((ParseResult parseResult) =>
+{
+    var inputFile = parseResult.GetValue(inputFileArg);
+    var outputFile = parseResult.GetValue(outputFileArg);
+    var id = parseResult.GetValue(idOption);
+    
+    RunAsync(inputFile, outputFile, id);
+});
 
-await rootCommand.InvokeAsync(args);
+rootCommand.Parse(args).Invoke();
 
-async Task RunAsync(string inputFile, string outputFile, string? id)
+void RunAsync(string inputFile, string outputFile, string? id)
 {
     Console.WriteLine("cj2glb");
     Console.WriteLine("Input file: " + inputFile);
