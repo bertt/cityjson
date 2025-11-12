@@ -100,7 +100,9 @@ Result: fzk_haus.glb
 
 ## History
 
-2025-11-12: release 2.3 - Adding writing support
+2025-11-12: release 2.4 - Adding writing support
+
+2025-06-19: release 2.3 - Adding attributes support
 
 2025-05-06: release 2.2 - Adding textures support
 
