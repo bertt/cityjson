@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>bertt.CityJSON</PackageId>
     <Authors>Bert Temme</Authors>
     <Company>Bert Temme</Company>
@@ -17,6 +17,7 @@
     <PackageReleaseNotes>initial release</PackageReleaseNotes>
 	<PackageVersion>2.4</PackageVersion>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
