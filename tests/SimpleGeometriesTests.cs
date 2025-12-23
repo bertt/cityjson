@@ -1,5 +1,5 @@
 ﻿using CityJSON.Extensions;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
@@ -16,7 +16,7 @@ public class SimpleGeometriesTests
     public void ValidateCityJsonFile(string filePath, string expectedType, string expectedVersion, string expectedGeometryType, int expectedNumGeometries)
     {
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
 
         Assert.That(cityjson.Type, Is.EqualTo(expectedType));
         Assert.That(cityjson.Version, Is.EqualTo(expectedVersion));

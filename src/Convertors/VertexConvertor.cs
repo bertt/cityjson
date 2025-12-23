@@ -1,35 +1,42 @@
 ﻿using System;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CityJSON.Converters
 {
-    public class VertexConverter : JsonConverter
+    public sealed class VertexConverter : JsonConverter<Vertex>
     {
-        public override bool CanConvert(Type objectType)
+        public override Vertex Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return (objectType == typeof(Vertex));
+            if (reader.TokenType != JsonTokenType.StartArray)
+                throw new JsonException("Vertex must be a JSON array.");
+
+            reader.Read(); // X
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException("Vertex[0] must be a number.");
+            var x = reader.GetDouble();
+
+            reader.Read(); // Y
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException("Vertex[1] must be a number.");
+            var y = reader.GetDouble();
+
+            reader.Read(); // Z
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException("Vertex[2] must be a number.");
+            var z = reader.GetDouble();
+
+            reader.Read(); // EndArray
+            if (reader.TokenType != JsonTokenType.EndArray)
+                throw new JsonException("Vertex array must have exactly 3 numbers.");
+
+            return new Vertex { X = x, Y = y, Z = z };
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, Vertex value, JsonSerializerOptions options)
         {
-            var geometry = JArray.Load(reader);
-            var vertices = geometry.Values<double>().ToList();
-            return new Vertex
-            {
-                X = vertices[0],
-                Y = vertices[1],
-                Z = vertices[2]
-            };
-        }
-
-        public override bool CanWrite => true;
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var vertex = (Vertex)value;
-            serializer.Serialize(writer, new[] { vertex.X, vertex.Y, vertex.Z });
+            writer.WriteStartArray();
+            writer.WriteNumberValue(value.X);
+            writer.WriteNumberValue(value.Y);
+            writer.WriteNumberValue(value.Z);
+            writer.WriteEndArray();
         }
     }
 }

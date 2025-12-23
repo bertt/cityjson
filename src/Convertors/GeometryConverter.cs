@@ -1,194 +1,222 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using CityJSON.Geometry;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CityJSON.Convertors
 {
-    public class GeometryConverter : JsonConverter
+    public sealed class GeometryConverter : JsonConverter<Geometry.Geometry>
     {
-        public override bool CanConvert(Type objectType)
+        public override Geometry.Geometry Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return objectType == typeof(Geometry.Geometry);
-        }
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var root = doc.RootElement;
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var jsonObject = JObject.Load(reader);
-            var type = jsonObject["type"].ToString().ToLowerInvariant();
-            Dictionary<string, object> textureObject = null;
+            if (!root.TryGetProperty("type", out var typeEl) || typeEl.ValueKind != JsonValueKind.String)
+                throw new JsonException("Geometry missing 'type'.");
 
-            Geometry.Geometry obj = null;
+            var type = typeEl.GetString()!.ToLowerInvariant();
 
-            if (jsonObject["texture"] != null)
+            Geometry.Geometry obj = type switch
             {
-                textureObject = jsonObject["texture"].ToObject<Dictionary<string, Object>>();
-            }
+                "solid" => ReadSolid(root, options),
+                "compositesurface" => new CompositeSurfaceGeometry
+                {
+                    Type = GeometryType.CompositeSurface,
+                    Boundaries = ReadRequired(root, "boundaries").Deserialize<int[][][]>(options)
+                                 ?? throw new JsonException("Invalid 'boundaries' for CompositeSurface.")
+                },
+                "multisurface" => ReadMultiSurface(root, options),
+                "multisolid" => new MultiSolidGeometry
+                {
+                    Type = GeometryType.MultiSolid,
+                    Boundaries = ReadRequired(root, "boundaries").Deserialize<int[][][][][]>(options)
+                                 ?? throw new JsonException("Invalid 'boundaries' for MultiSolid.")
+                },
+                "compositesolid" => new CompositeSolidGeometry
+                {
+                    Type = GeometryType.CompositeSolid,
+                    Boundaries = ReadRequired(root, "boundaries").Deserialize<int[][][][][]>(options)
+                                 ?? throw new JsonException("Invalid 'boundaries' for CompositeSolid.")
+                },
+                _ => null
+            };
 
-            switch (type)
+            if (root.TryGetProperty("lod", out var lodEl) && lodEl.ValueKind != JsonValueKind.Null)
             {
-                case "solid":
-                    {
-                        var boundaries = jsonObject["boundaries"].ToObject<int[][][][]>();
-                        obj = new SolidGeometry() { Type = GeometryType.Solid, Boundaries = boundaries };
-
-                        if (textureObject != null)
-                        {
-                            ((SolidGeometry)obj).Texture = ReadTextureSolid(jsonObject["texture"].ToObject<Dictionary<string, object>>());
-                        }
-                        break;
-                    }
-
-                case "compositesurface":
-                    {
-                        var boundaries = jsonObject["boundaries"].ToObject<int[][][]>();
-                        obj = new CompositeSurfaceGeometry() { Type = GeometryType.CompositeSurface, Boundaries = boundaries };
-                        break;
-                    }
-
-                case "multisurface":
-                    {
-                        var boundaries = jsonObject["boundaries"].ToObject<int[][][]>();
-                        obj = new MultiSurfaceGeometry() { Type = GeometryType.MultiSurface, Boundaries = boundaries };
-                        if(textureObject != null)
-                        {
-                            ((MultiSurfaceGeometry)obj).Texture = ReadTexture(jsonObject["texture"].ToObject<Dictionary<string, object>>());
-                        }   
-                        break;
-                    }
-                case "multisolid":
-                    {
-                        var boundaries = jsonObject["boundaries"].ToObject<int[][][][][]>();
-                        obj = new MultiSolidGeometry() { Type = GeometryType.MultiSolid, Boundaries = boundaries };
-                        break;
-                    }
-                case "compositesolid":
-                    {
-                        var boundaries = jsonObject["boundaries"].ToObject<int[][][][][]>();
-                        obj = new CompositeSolidGeometry() { Type = GeometryType.CompositeSolid, Boundaries = boundaries };
-                        break;
-                    }
-
-            }
-
-            if (jsonObject["lod"] != null)
-            {
-                obj.Lod = jsonObject["lod"].ToString();
+                obj.Lod = lodEl.ValueKind switch
+                {
+                    JsonValueKind.String => lodEl.GetString(),
+                    JsonValueKind.Number => lodEl.GetRawText(), // "2"
+                    _ => throw new JsonException("'lod' must be string or number.")
+                };
             }
 
             return obj;
         }
 
-        public override bool CanWrite => true;
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, Geometry.Geometry value, JsonSerializerOptions options)
         {
-            var geometry = (Geometry.Geometry)value;
-            
             writer.WriteStartObject();
-            
-            // Write type
-            writer.WritePropertyName("type");
-            writer.WriteValue(geometry.Type.ToString());
-            
-            // Write lod if present
-            if (!string.IsNullOrEmpty(geometry.Lod))
-            {
-                writer.WritePropertyName("lod");
-                writer.WriteValue(geometry.Lod);
-            }
-            
-            // Write boundaries based on type
+
+            writer.WriteString("type", value.Type.ToString());
+
+            if (!string.IsNullOrEmpty(value.Lod))
+                writer.WriteString("lod", value.Lod);
+
             writer.WritePropertyName("boundaries");
-            switch (geometry.Type)
+
+            switch (value.Type)
             {
                 case GeometryType.Solid:
-                    var solid = (SolidGeometry)geometry;
-                    serializer.Serialize(writer, solid.Boundaries);
+                {
+                    var solid = (SolidGeometry)value;
+                    JsonSerializer.Serialize(writer, solid.Boundaries, options);
+
                     if (solid.Texture != null)
                     {
                         writer.WritePropertyName("texture");
-                        WriteTexture(writer, serializer, solid.Texture);
+                        WriteTexture(writer, solid.Texture, options);
                     }
                     break;
-                    
+                }
                 case GeometryType.CompositeSurface:
-                    var compositeSurface = (CompositeSurfaceGeometry)geometry;
-                    serializer.Serialize(writer, compositeSurface.Boundaries);
-                    if (compositeSurface.Texture != null)
+                {
+                    var g = (CompositeSurfaceGeometry)value;
+                    JsonSerializer.Serialize(writer, g.Boundaries, options);
+
+                    if (g.Texture != null)
                     {
                         writer.WritePropertyName("texture");
-                        WriteTexture(writer, serializer, compositeSurface.Texture);
+                        WriteTexture(writer, g.Texture, options);
                     }
                     break;
-                    
+                }
                 case GeometryType.MultiSurface:
-                    var multiSurface = (MultiSurfaceGeometry)geometry;
-                    serializer.Serialize(writer, multiSurface.Boundaries);
-                    if (multiSurface.Texture != null)
+                {
+                    var g = (MultiSurfaceGeometry)value;
+                    JsonSerializer.Serialize(writer, g.Boundaries, options);
+
+                    if (g.Texture != null)
                     {
                         writer.WritePropertyName("texture");
-                        WriteTexture(writer, serializer, multiSurface.Texture);
+                        WriteTexture(writer, g.Texture, options);
                     }
                     break;
-                    
+                }
                 case GeometryType.MultiSolid:
-                    var multiSolid = (MultiSolidGeometry)geometry;
-                    serializer.Serialize(writer, multiSolid.Boundaries);
-                    if (multiSolid.Texture != null)
+                {
+                    var g = (MultiSolidGeometry)value;
+                    JsonSerializer.Serialize(writer, g.Boundaries, options);
+
+                    if (g.Texture != null)
                     {
                         writer.WritePropertyName("texture");
-                        WriteTexture(writer, serializer, multiSolid.Texture);
+                        WriteTexture(writer, g.Texture, options);
                     }
                     break;
-                    
+                }
                 case GeometryType.CompositeSolid:
-                    var compositeSolid = (CompositeSolidGeometry)geometry;
-                    serializer.Serialize(writer, compositeSolid.Boundaries);
-                    if (compositeSolid.Texture != null)
+                {
+                    var g = (CompositeSolidGeometry)value;
+                    JsonSerializer.Serialize(writer, g.Boundaries, options);
+
+                    if (g.Texture != null)
                     {
                         writer.WritePropertyName("texture");
-                        WriteTexture(writer, serializer, compositeSolid.Texture);
+                        WriteTexture(writer, g.Texture, options);
                     }
                     break;
+                }
+                default:
+                    throw new JsonException($"Unsupported geometry type '{value.Type}'.");
             }
-            
+
             writer.WriteEndObject();
         }
-        
-        private void WriteTexture<T>(JsonWriter writer, JsonSerializer serializer, Dictionary<string, T> texture)
+
+        private static SolidGeometry ReadSolid(JsonElement root, JsonSerializerOptions options)
+        {
+            var solid = new SolidGeometry
+            {
+                Type = GeometryType.Solid,
+                Boundaries = ReadRequired(root, "boundaries").Deserialize<int[][][][]>(options)
+                             ?? throw new JsonException("Invalid 'boundaries' for Solid.")
+            };
+
+            if (TryGetNonNull(root, "texture", out var texEl))
+                solid.Texture = ReadTextureGeneric<int?[][][][]>(texEl, options);
+
+            return solid;
+        }
+
+        private static MultiSurfaceGeometry ReadMultiSurface(JsonElement root, JsonSerializerOptions options)
+        {
+            var ms = new MultiSurfaceGeometry
+            {
+                Type = GeometryType.MultiSurface,
+                Boundaries = ReadRequired(root, "boundaries").Deserialize<int[][][]>(options)
+                             ?? throw new JsonException("Invalid 'boundaries' for MultiSurface.")
+            };
+
+            if (TryGetNonNull(root, "texture", out var texEl))
+                ms.Texture = ReadTextureGeneric<int?[][][]>(texEl, options);
+
+            return ms;
+        }
+
+        private static JsonElement ReadRequired(JsonElement root, string name)
+        {
+            if (!root.TryGetProperty(name, out var el))
+                throw new JsonException($"Geometry missing '{name}'.");
+            return el;
+        }
+
+        private static bool TryGetNonNull(JsonElement root, string name, out JsonElement el)
+        {
+            if (root.TryGetProperty(name, out el) && el.ValueKind != JsonValueKind.Null)
+                return true;
+            el = default;
+            return false;
+        }
+
+        private static Dictionary<string, T> ReadTextureGeneric<T>(JsonElement textureEl, JsonSerializerOptions options)
+        {
+            if (textureEl.ValueKind != JsonValueKind.Object)
+                throw new JsonException("'texture' must be an object.");
+
+            var dict = new Dictionary<string, T>(StringComparer.Ordinal);
+
+            foreach (var prop in textureEl.EnumerateObject())
+            {
+                if (!prop.Value.TryGetProperty("values", out var valuesEl))
+                    throw new JsonException("Texture entry missing 'values'.");
+
+                var value = valuesEl.Deserialize<T>(options);
+                if (value is null)
+                    throw new JsonException("Invalid texture 'values'.");
+
+                dict[prop.Name] = value;
+            }
+
+            return dict;
+        }
+
+        private static void WriteTexture<T>(Utf8JsonWriter writer, IDictionary<string, T> texture, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
+
             foreach (var kvp in texture)
             {
                 writer.WritePropertyName(kvp.Key);
                 writer.WriteStartObject();
                 writer.WritePropertyName("values");
-                serializer.Serialize(writer, kvp.Value);
+                JsonSerializer.Serialize(writer, kvp.Value, options);
                 writer.WriteEndObject();
             }
+
             writer.WriteEndObject();
-        }
-
-
-        private Dictionary<string, int?[][][][]> ReadTextureSolid(Dictionary<string, object> texture)
-        {
-            return ReadTextureGeneric<int?[][][][]>(texture);
-        }
-
-        private Dictionary<string, int?[][][]> ReadTexture(Dictionary<string, object> texture)
-        {
-            return ReadTextureGeneric<int?[][][]>(texture);
-        }
-
-        private Dictionary<string, T> ReadTextureGeneric<T>(Dictionary<string, object> texture)
-        {
-            return texture.ToDictionary(
-                t => t.Key,
-                t => ((JObject)t.Value)["values"].ToObject<T>()
-            );
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
 using CityJSON.Geometry;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NUnit.Framework;
 
 namespace CityJSON.Tests
@@ -39,13 +39,13 @@ namespace CityJSON.Tests
         {
             // Read the minimal fixture
             var originalJson = File.ReadAllText("fixtures/minimal.city.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify key properties
             Assert.That(roundTrippedDocument.Type, Is.EqualTo(document.Type));
@@ -61,13 +61,13 @@ namespace CityJSON.Tests
         {
             // Read the cube fixture with geometry
             var originalJson = File.ReadAllText("./fixtures/simplegeom/v2.0/cube.city.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify document properties
             Assert.That(roundTrippedDocument.Type, Is.EqualTo(document.Type));
@@ -100,13 +100,13 @@ namespace CityJSON.Tests
         {
             // Read a file with MultiSurface geometry
             var originalJson = File.ReadAllText("./fixtures/building_with_innerring.city.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify document properties
             Assert.That(roundTrippedDocument.Type, Is.EqualTo(document.Type));
@@ -131,13 +131,13 @@ namespace CityJSON.Tests
         {
             // Read a file with textures
             var originalJson = File.ReadAllText("./fixtures/minimal_textures.city.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify appearance/textures
             Assert.That(roundTrippedDocument.Appearance, Is.Not.Null);
@@ -159,13 +159,13 @@ namespace CityJSON.Tests
         {
             // Read a larger file
             var originalJson = File.ReadAllText("fixtures/denhaag.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify document properties
             Assert.That(roundTrippedDocument.Version, Is.EqualTo(document.Version));
@@ -186,13 +186,13 @@ namespace CityJSON.Tests
         {
             // Read a file with address property
             var originalJson = File.ReadAllText("fixtures/euromast.json");
-            var document = JsonConvert.DeserializeObject<CityJsonDocument>(originalJson);
+            var document = JsonSerializer.Deserialize<CityJsonDocument>(originalJson,CityJsonSystemTextJson.Options);
 
             // Write it back
             var writtenJson = CityJsonWriter.Write(document);
 
             // Read it again
-            var roundTrippedDocument = JsonConvert.DeserializeObject<CityJsonDocument>(writtenJson);
+            var roundTrippedDocument = JsonSerializer.Deserialize<CityJsonDocument>(writtenJson,CityJsonSystemTextJson.Options);
 
             // Verify city objects count
             Assert.That(roundTrippedDocument.CityObjects.Count, Is.EqualTo(document.CityObjects.Count));
@@ -233,7 +233,7 @@ namespace CityJSON.Tests
 
                 // Read it back
                 var readJson = File.ReadAllText(tempFile);
-                var readDocument = JsonConvert.DeserializeObject<CityJsonDocument>(readJson);
+                var readDocument = JsonSerializer.Deserialize<CityJsonDocument>(readJson,CityJsonSystemTextJson.Options);
 
                 // Verify
                 Assert.That(readDocument.Type, Is.EqualTo(document.Type));

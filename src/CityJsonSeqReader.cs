@@ -1,6 +1,6 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 namespace CityJSON;
 public static class CityJsonSeqReader
@@ -14,7 +14,7 @@ public static class CityJsonSeqReader
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine();
-            var cityJsonSecond = JsonConvert.DeserializeObject<CityJsonDocument>(line);
+            var cityJsonSecond = JsonSerializer.Deserialize<CityJsonDocument>(line, CityJsonSystemTextJson.Options);
             result.Add(cityJsonSecond);
         }
         return result;
