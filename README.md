@@ -1,6 +1,6 @@
 # CityJSON
 
-.NET 6.0 Library for reading and writing CityJSON files (https://www.cityjson.org/)
+.NET Standard 2.0 Library for reading and writing CityJSON files (https://www.cityjson.org/)
 
 NuGet package: https://www.nuget.org/packages/bertt.CityJSON/
 
@@ -105,6 +105,8 @@ Result: fzk_haus.glb
 - No support for extensions, materials;
 
 ## History
+
+2026-01-05: release 2.5 - from .NET 6.0 to .NET Standard 2.0
 
 2025-11-12: release 2.4 - Adding writing support
 

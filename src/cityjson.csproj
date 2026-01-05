@@ -15,13 +15,13 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>CityJSON</PackageTags>
     <PackageReleaseNotes>initial release</PackageReleaseNotes>
-	<PackageVersion>2.4</PackageVersion>
+	<PackageVersion>2.5</PackageVersion>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetTopologySuite" Version="2.6.0" />
+    <PackageReference Include="NetTopologySuite" Version="2.6.0.0" />
     <PackageReference Include="NetTopologySuite.Features" Version="2.2.0" />
     <PackageReference Include="System.Text.Json" Version="10.0.1" />
   </ItemGroup>
