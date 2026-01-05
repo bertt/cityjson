@@ -1,9 +1,10 @@
 ﻿using CityJSON;
 using cj2glb;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Text.Json.Serialization;
 
 var inputFileArg = new Argument<string>("input CityJSON file");
 var outputFileArg = new Argument<string>("Output glTF 2.0 file");
@@ -38,7 +39,7 @@ void RunAsync(string inputFile, string outputFile, string? id)
     }
 
     var json = File.ReadAllText(inputFile);
-    var cityjsonDocument = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+    var cityjsonDocument = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
 
     // Set something sensible if not set    
     if (cityjsonDocument.Metadata.GeographicalExtent==null)
@@ -127,12 +128,14 @@ void RunAsync(string inputFile, string outputFile, string? id)
     root.Content = content;
     tilesetJson.Root = root;
 
-    var settings = new JsonSerializerSettings
-        {
-        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
-        Formatting = Formatting.Indented
+    var options = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
-    var tilesetJsonString = JsonConvert.SerializeObject(tilesetJson, settings);
+
+    var tilesetJsonString = JsonSerializer.Serialize(tilesetJson, options);
 
     var path = Path.GetDirectoryName(outputFile);
     if(path== "")

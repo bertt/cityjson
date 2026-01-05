@@ -1,33 +1,22 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CityJSON;
 
 public static class CityJsonWriter
 {
-    private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+    private static readonly JsonSerializerOptions Options = new()
     {
-        Formatting = Formatting.Indented,
-        ContractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new CamelCaseNamingStrategy
-            {
-                ProcessDictionaryKeys = false,
-                OverrideSpecifiedNames = false
-            }
-        },
-        NullValueHandling = NullValueHandling.Ignore
+        WriteIndented = true,                         // Formatting.Indented
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        // DictionaryKeyPolicy = null;                // keep dictionary keys unchanged
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
     public static string Write(CityJsonDocument document)
-    {
-        return JsonConvert.SerializeObject(document, Settings);
-    }
+        => JsonSerializer.Serialize(document, Options);
 
     public static void WriteToFile(CityJsonDocument document, string filePath)
-    {
-        var json = Write(document);
-        File.WriteAllText(filePath, json);
-    }
+        => File.WriteAllText(filePath, Write(document));
 }

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace CityJSON
 {
@@ -8,6 +8,6 @@ namespace CityJSON
         public CityObjectType Type { get; set; }
         public Dictionary<string, object> Attributes { get; set; }
         public List<Geometry.Geometry> Geometry { get; set; }
-        public JToken Address { get; set; }
+        public JsonNode? Address { get; set; }
     }
 }

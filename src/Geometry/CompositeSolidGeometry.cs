@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CityJSON.Geometry;
 public class CompositeSolidGeometry : Geometry
 {
     public int[][][][][] Boundaries { get; set; }
 
-    [JsonProperty("texture")]
+    [JsonPropertyName("texture")]
     public Dictionary<string, int?[][][][][]> Texture { get; set; }
 }

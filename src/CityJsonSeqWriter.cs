@@ -1,35 +1,29 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace CityJSON;
 
+
 public static class CityJsonSeqWriter
 {
-    private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+    private static readonly JsonSerializerOptions Options = new()
     {
-        Formatting = Formatting.None,
-        ContractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new CamelCaseNamingStrategy
-            {
-                ProcessDictionaryKeys = false,
-                OverrideSpecifiedNames = false
-            }
-        },
-        NullValueHandling = NullValueHandling.Ignore
+        WriteIndented = false,                       // Formatting.None
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // CamelCaseNamingStrategy
+        // DictionaryKeyPolicy = null;               // keep dictionary keys unchanged (matches ProcessDictionaryKeys = false)
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull // NullValueHandling.Ignore
     };
 
     public static void WriteCityJsonSeq(List<CityJsonDocument> documents, string filePath)
     {
-        using (var writer = new StreamWriter(filePath))
+        using var writer = new StreamWriter(filePath);
+
+        foreach (var document in documents)
         {
-            foreach (var document in documents)
-            {
-                var json = JsonConvert.SerializeObject(document, Settings);
-                writer.WriteLine(json);
-            }
+            var json = JsonSerializer.Serialize(document, Options);
+            writer.WriteLine(json);
         }
     }
 }

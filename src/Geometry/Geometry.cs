@@ -1,5 +1,6 @@
 ﻿using CityJSON.Convertors;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CityJSON.Geometry
 {

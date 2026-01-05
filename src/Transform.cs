@@ -1,15 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace CityJSON
 {
     public partial class Transform
     {
 
-        [JsonProperty("scale", Required = Required.Always)]
+        [JsonPropertyName("scale")]
+        [JsonRequired]
         public double[] Scale { get; set; }
 
-        [JsonProperty("translate", Required = Required.Always)]
+        [JsonPropertyName("translate")]
+        [JsonRequired]
         public double[] Translate { get; set; }
 
         public Vector3 TranslateVector3()

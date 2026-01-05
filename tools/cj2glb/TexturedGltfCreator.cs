@@ -225,9 +225,20 @@ public class TexturedGltfCreator
                     var v1 = vertices[index1].ToVector3() * transform.ScaleVector3();
                     var v2 = vertices[index2].ToVector3() * transform.ScaleVector3();
 
+                    #if NET48 || NETSTANDARD2_0
+                    var uv0 = appearance.VerticesTexture[(int)textureIds[index0]];
+                    var uv1 = appearance.VerticesTexture[(int)textureIds[index1]];
+                    var uv2 = appearance.VerticesTexture[(int)textureIds[index2]];
+
+                    var t0 = new Vector2(uv0[0], uv0[1]);
+                    var t1 = new Vector2(uv1[0], uv1[1]);
+                    var t2 = new Vector2(uv2[0], uv2[1]);
+                    #else
+                    // not sure if the overload has additional performance improvements.
                     var t0 = new Vector2(appearance.VerticesTexture[(int)textureIds[index0]]);
                     var t1 = new Vector2(appearance.VerticesTexture[(int)textureIds[index1]]);
                     var t2 = new Vector2(appearance.VerticesTexture[(int)textureIds[index2]]);
+                    #endif
 
                     // vector2 originates from the bottom left corner
                     t0 = new Vector2(t0.X, 1 - t0.Y);

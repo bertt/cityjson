@@ -4,7 +4,7 @@ using CityJSON.Extensions;
 using CityJSON.Geometry;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NUnit.Framework;
 
 namespace CityJSON.Tests
@@ -39,7 +39,7 @@ namespace CityJSON.Tests
             // Maak de polygon met het gat
             var polygonWithHole = new Polygon(exterior, new[] { hole }, geometryFactory);
 
-            // Maak een Multipolygon met één polygon met een gat
+            // Maak een Multipolygon met ï¿½ï¿½n polygon met een gat
             var multiPolygon1 = new MultiPolygon(new[] { polygonWithHole }, geometryFactory);
 
         }
@@ -48,7 +48,7 @@ namespace CityJSON.Tests
         public void TestTorus()
         {
             var json = File.ReadAllText("./fixtures/simplegeom/v2.0/cube.city.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             var features = cityjson.ToFeatures();
             Assert.That(features.Count == 1);
             var feature = features.First();
@@ -62,7 +62,7 @@ namespace CityJSON.Tests
         public void ReadDelftshavenTest()
         {
             var json = File.ReadAllText("./fixtures/3-20-DELFSHAVEN.city.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             var firstCityObject = cityjson.CityObjects.First().Value;
             Assert.That(firstCityObject.Type == CityObjectType.Building);
             var firstGeometry = firstCityObject.Geometry.First();
@@ -84,7 +84,7 @@ namespace CityJSON.Tests
         public void ReadAppearanceTest()
         {
             var json = File.ReadAllText("./fixtures/minimal_textures.city.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             Assert.That(cityjson.Appearance.Textures.Count == 2);
             var firstTexture = cityjson.Appearance.Textures.First();
             Assert.That(firstTexture.Image == "http://www.someurl.org/filename.jpg");
@@ -106,8 +106,7 @@ namespace CityJSON.Tests
         public void ReadBuildingWithInnerRingTest()
         {
             var json = File.ReadAllText("./fixtures/building_with_innerring.city.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
-
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             Assert.That(cityjson.Type, Is.EqualTo("CityJSON"));
             Assert.That(cityjson.Version, Is.EqualTo("1.0"));
 
@@ -125,7 +124,7 @@ namespace CityJSON.Tests
         public void ReadMinimal20CityJson()
         {
             var json = File.ReadAllText("fixtures/minimal.city.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
 
             Assert.That(cityjson.Type == "CityJSON");
             Assert.That(cityjson.Version == "2.0");
@@ -149,14 +148,14 @@ namespace CityJSON.Tests
         public void TestReadDenHaag()
         {
             var json = File.ReadAllText("fixtures/denhaag.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             Assert.That(cityjson.Version == "1.0");
             Assert.That(cityjson.CityObjects.Count == 2498);
             var firstCityObject = cityjson.CityObjects.First().Value;
             var attributes = firstCityObject.Attributes;
             Assert.That(attributes.Count == 5);
             var firstAttribute = attributes.First().Value;
-            Assert.That(firstAttribute.Equals("1000"));
+            Assert.That(firstAttribute.ToString().Equals("1000"));
 
             var firstGeometry = firstCityObject.Geometry.First();
             Assert.That(firstGeometry.Type == Geometry.GeometryType.Solid);
@@ -168,7 +167,7 @@ namespace CityJSON.Tests
         public void TestReadGebouwen()
         {
             var json = File.ReadAllText("fixtures/25gn1_04_2020_gebouwen.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             Assert.That(cityjson.Version == "1.0");
             Assert.That(cityjson.CityObjects.Count == 7313);
         }
@@ -177,7 +176,7 @@ namespace CityJSON.Tests
         public void TestMesh()
         {
             var json = File.ReadAllText("fixtures/mesh.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             Assert.That(cityjson.Version == "2.0");
             Assert.That(cityjson.CityObjects.Count == 1);
             var firstCityObject = cityjson.CityObjects.First();
@@ -202,7 +201,7 @@ namespace CityJSON.Tests
         public void TestAdressProperty()
         {
             var json = File.ReadAllText("fixtures/euromast.json");
-            var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+            var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
             // get second city object
             var cityObjects = cityjson.CityObjects;
             Assert.That(cityObjects.Count == 3);

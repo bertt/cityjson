@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CityJSON;
 public class Texture
 {
-    [JsonProperty("type", Required = Required.Always)]
+    [JsonPropertyName("type")]
     public TextureImageType ImageType { get; set; }
-    [JsonProperty(Required = Required.Always)]
+    
+    [JsonRequired]
     public string Image { get; set; }
     
-    [JsonProperty("wrapMode", Required = Required.Default)]
+    [JsonPropertyName("wrapMode")]
     public TextureWrapMode WrapMode { get; set; }
 
     public TextureType TextureType { get; set; }

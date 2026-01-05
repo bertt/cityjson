@@ -1,6 +1,6 @@
 ﻿using CityJSON;
 using cj2glb;
-using Newtonsoft.Json;
+using System.Text.Json;
 using SharpGLTF.Schema2;
 
 namespace cj2gltf.tests;
@@ -12,7 +12,7 @@ public class Tests
     {
         var texturesBaseDirectory = "./testfixtures/railway";
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
         var result = TexturedGltfCreator.ToGltf(cityjson!, texturesBaseDirectory);
         Assert.That(result.Count() > 0);
         var stream = new MemoryStream(result);
@@ -29,7 +29,7 @@ public class Tests
     {
         var texturesBaseDirectory = "./testfixtures/fzkhaus";
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json, CityJsonSystemTextJson.Options);
         var result = TexturedGltfCreator.ToGltf(cityjson!, texturesBaseDirectory);
         Assert.That(result.Count() > 0);
         var stream = new MemoryStream(result);
@@ -46,7 +46,7 @@ public class Tests
     {
         var texturesBaseDirectory = "./testfixtures/";
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
         var id = "{CCADD505-2C1A-409F-8D4B-793A374DB47A}";
         var result = TexturedGltfCreator.ToGltf(cityjson!, texturesBaseDirectory, id);
         Assert.That(result.Count() > 0);
@@ -68,7 +68,7 @@ public class Tests
     public void ToGltfNewTests(string filePath, int triangles)
     {
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
         var result = GltfCreator.ToGltf(cityjson!);
         Assert.That(result.Count() > 0);
         var stream = new MemoryStream(result);
@@ -84,7 +84,7 @@ public class Tests
     public void DelfshavenToGltfNewTests(string filePath)
     {
         var json = File.ReadAllText(filePath);
-        var cityjson = JsonConvert.DeserializeObject<CityJsonDocument>(json);
+        var cityjson = JsonSerializer.Deserialize<CityJsonDocument>(json,CityJsonSystemTextJson.Options);
         var result = GltfCreator.ToGltf(cityjson!);
         Assert.That(result.Count() > 0);
         var stream = new MemoryStream(result);

@@ -1,6 +1,7 @@
 ﻿using CityJSON.Converters;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace CityJSON
 {
